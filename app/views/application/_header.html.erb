@@ -1,17 +1,47 @@
-<div class="left_header"><img alt="Vault Tec" title="Results may vary" src="../assets/logo.jpg"/></div>
-<div class="center_header">
-    <div class="center_text">
-        <div style="font-family: sans-serif; font-size: xx-large;">
-            <%= @title %>
+<script>
+function headerLayout()
+{
+    var logo_height = document.getElementById('header_left').offsetHeight;
+    var title_height = document.getElementById('mtitle').offsetHeight;
+    var right_height = document.getElementById('header_right').offsetHeight;
+    var h = Math.max(logo_height, title_height, right_height);
+    
+    document.getElementById('header_left').style.height = h;
+    document.getElementById('mtitle').style.height = h;
+    document.getElementById('header').style.height = h;
+    document.getElementById('header_right').style.height = h;
+    
+    var img_pos = (h - logo_height) / 2;
+//    document.getElementById('logo').style.top = img_pos;
+
+    var title_pos = (h - title_height) / 2;
+    document.getElementById('mtitle').style.top = title_pos;
+}
+
+function pageLayout()
+{
+    //headerLayout();
+}
+
+window.onload=pageLayout;
+
+</script>
+
+<div class="header" id="header">
+    <div id="header_title" class="header_title">
+        <div id="mtitle" style="position: relative;">
+            <font size="+3"><%= @title %></font><br/>
+            <font size="+2"><%= @subtitle %></font><br/>
         </div>
-        <div style="font-family: sans-serif; font-size: large;">
-            <%= @subtitle %>
+    </div>
+    <div class="header_layer2">
+        <div id="header_left" class="header_left">
+            <img id="logo" alt="Vault Tec" title="Results may vary" src="../assets/logo.jpg"/>
+        </div>
+        <div class="header_center"></div>
+        <div id="header_right" class="header_right">
+            <%= form_tag(:controller => "application", :action => "logout") do %>&nbsp;<%= @username %>&nbsp;<input type="submit" value="Выйти" name="Logout" /><% end %>
         </div>
     </div>
 </div>
-<!--<div class="right_header">
-    <div class="center_text">
-        <%= form_tag(:controller => "application", :action => "logout") do %>&nbsp;<%= @username %>&nbsp;<input type="submit" value="Выйти" name="Logout" /><% end %>
-    </div>
-</div>
--->
+

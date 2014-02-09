@@ -1,31 +1,31 @@
 .header {
-    position: absolute;
-    height: 100px;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    background: #AA0;
-    z-index: 1;
-}
-.left_header {
-    z-index: 5;
-}
-.center_header {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    z-index: 100;
-    text-align: center;
-    background: #0F0;
-}
-.right_header {
     position: relative;
-    right: 0px;
-    margin: auto;
-    z-index: 5;
-    background: #EEE;
 }
-.center_text {
-    margin: auto;
+.header_left {
+    margin: auto 0;
+    display: table-cell;
+    vertical-align: middle;
+}
+.header_title {
+    position: absolute;
+    text-align: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    vertical-align: middle;
+    z-index: 100;
+}
+.header_layer2 {
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+}
+.header_center {
+    display: table-cell;
+    width: 100%;
+}
+.header_right {
+    vertical-align: middle;
+    display: table-cell;
 }
