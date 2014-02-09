@@ -1,0 +1,55 @@
+<script>
+    function formSubmit()
+    {
+        var n = $('input:text[name="name"]').val();
+        var p = $('input:password[name="password"]').val();
+
+        var hash = CryptoJS.SHA3(p + ':' + n);
+
+        $('input:hidden[name="hash"]').val(hash);
+        $('input:hidden[name="login"]').val(n);
+
+        var f = $("#hidden_form");
+        f.submit();
+
+        return false;
+    }
+</script>
+
+<div align="center" style="font-family: serif;"> 
+    <form id="login_form" onsubmit="return formSubmit();">
+      <table cellpadding="5" align="middle" style="border-collapse: collapse; display: table; width: 300px;" class=" htmtableborders"> 
+        <tbody> 
+          <tr align="center"> 
+            <td rowspan="1" colspan="2">Vault Tec<br> 
+              <img align="top" src="../assets/logo.jpg" alt="Results may vary" title="Results may vary"/><br>Power Control 
+            </td> 
+          </tr>
+          <% if @password_fail %>
+          <tr>
+          	<td rowspan="1" colspan="2">
+				<div align="center"><font size=+2 color=red>Такой комбинации ID и пароля не существует</font></div>          		
+          	</td>
+          </tr>
+          <% end %>
+          <tr> 
+            <td style="background-image: none; border-width: 0px; text-align: right; vertical-align: middle; border-style: none;">&nbsp;ID:</td> 
+            <td><%= text_field_tag("name") %></td> 
+          </tr> 
+          <tr> 
+            <td style="background-image: none; border-width: 0px; text-align: right; vertical-align: middle; border-style: none;">Пароль: <br /></td> 
+            <td><%= password_field_tag("password") %></td> 
+          </tr> 
+          <tr> 
+            <td rowspan="1" colspan="2"><center><%= submit_tag("Войти") %></center></td> 
+          </tr>
+        </tbody> 
+      </table> 
+    </form>
+
+    <%= form_tag({:action => "login"}, :id => "hidden_form") do %>
+        <%= hidden_field_tag 'hash' %>
+        <%= hidden_field_tag 'login' %>
+    <% end %>
+</div>
+

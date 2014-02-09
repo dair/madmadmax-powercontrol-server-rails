@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fallout 2014: Power Control<%=
+    if not @title.nil?
+      ret = ': ' + @title
+    end
+    if not @subtitle.nil?
+      ret = ret + " | " + @subtitle
+    end
+    ret
+  %></title>
+  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+    <% if @username %>
+        <div class="header">
+            <%= render "header" %>
+        </div>
+    <% end %>
+    
+    <%= yield %>
+</body>
+</html>

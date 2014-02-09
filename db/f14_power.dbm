@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel>
+<schema name="public" protected="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<database name="new_database">
+</database>
+
+<table name="device">
+	<schema name="public"/>
+	<position x="110" y="144"/>
+	<column name="id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="name" default-value="NULL">
+		<type name="varchar" length="255"/>
+	</column>
+	<column name="type" not-null="true" default-value="'V'">
+		<type name="char"/>
+	</column>
+	<constraint name="device_pk_id" type="pk-constr" factor="10" table="public.device">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<index name="name_idx" table="public.device"
+		 concurrent="false" unique="false" fast-update="false"
+		 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="name"/>
+		</idxelement>
+	</index>
+</table>
+
+<table name="point">
+	<schema name="public"/>
+	<position x="618" y="153"/>
+	<column name="dt" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<column name="dt_recv" not-null="true" default-value="now()">
+		<type name="timestamp"/>
+	</column>
+	<column name="latitude" not-null="true">
+		<type name="double precision"/>
+	</column>
+	<column name="longitude" not-null="true">
+		<type name="double precision"/>
+	</column>
+</table>
+
+<relationship name="device_has_many_point" type="rel1n"
+	 src-col-pattern="{st}_{sc}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 col-indexes="4" constr-indexes="0"
+	 src-table="public.device"
+	 dst-table="public.point"
+	 src-required="true" dst-required="false"/>
+
+<table name="user">
+	<schema name="public"/>
+	<position x="321" y="285"/>
+	<column name="name" not-null="true">
+		<type name="varchar" length="42"/>
+	</column>
+	<column name="salt" not-null="true">
+		<type name="varchar" length="64"/>
+	</column>
+	<column name="hash" not-null="true">
+		<type name="varchar" length="64"/>
+	</column>
+	<constraint name="name_pk" type="pk-constr" factor="10" table="public.user">
+		<columns names="name" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="dt_idx" table="public.point"
+	 concurrent="false" unique="false" fast-update="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="device_id"/>
+		</idxelement>
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="dt"/>
+		</idxelement>
+</index>
+<index name="dt_recv_idx" table="public.point"
+	 concurrent="false" unique="false" fast-update="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="device_id"/>
+		</idxelement>
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="dt_recv"/>
+		</idxelement>
+</index>
+</dbmodel>
