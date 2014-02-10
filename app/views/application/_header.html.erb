@@ -40,7 +40,7 @@ window.onload=pageLayout;
         </div>
         <div class="header_center"></div>
         <div id="header_right" class="header_right">
-            <%= form_tag(:controller => "application", :action => "logout") do %>&nbsp;<%= @username %>&nbsp;<input type="submit" value="Выйти" name="Logout" /><% end %>
+            <%= form_tag(:controller => "application", :action => "logout") do %>&nbsp;<a href="/admin/user_edit"><%= @username %></a>&nbsp;<input type="submit" value="Выйти" name="Logout" /><% end %>
         </div>
     </div>
 </div>
