@@ -11,3 +11,14 @@
  *= require_self
  *= require_tree .
  */
+
+.page {
+/*    background: #AAA;*/
+}
+.rest {
+    padding: 10px;
+    position: relative;
+    top: 0;
+    /*background: #F7F;  pink */
+}
+

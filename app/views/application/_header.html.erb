@@ -6,27 +6,28 @@ function headerLayout()
     var right_height = document.getElementById('header_right').offsetHeight;
     var h = Math.max(logo_height, title_height, right_height);
     
-    document.getElementById('header_left').style.height = h;
-    document.getElementById('mtitle').style.height = h;
-    document.getElementById('header').style.height = h;
-    document.getElementById('header_right').style.height = h;
+    document.getElementById('header_left').style.height = h + 'px';
+    document.getElementById('mtitle').style.height = h + 'px';
+    document.getElementById('header').style.height = h + 'px';
+    document.getElementById('header_right').style.height = h + 'px';
     
     var img_pos = (h - logo_height) / 2;
 //    document.getElementById('logo').style.top = img_pos;
 
     var title_pos = (h - title_height) / 2;
-    document.getElementById('mtitle').style.top = title_pos;
+    document.getElementById('mtitle').style.top = title_pos + 'px';
 }
 
 function pageLayout()
 {
-    //headerLayout();
+    headerLayout();
 }
 
-window.onload=pageLayout;
+$(document).ready(function() {
+    pageLayout();
+});
 
 </script>
-
 <div class="header" id="header">
     <div id="header_title" class="header_title">
         <div id="mtitle" style="position: relative;">
@@ -36,7 +37,7 @@ window.onload=pageLayout;
     </div>
     <div class="header_layer2">
         <div id="header_left" class="header_left">
-            <img id="logo" alt="Vault Tec" title="Results may vary" src="../assets/logo.jpg"/>
+            <img id="logo" alt="Vault Tec" title="Results may vary" src="/assets/logo.jpg"/>
         </div>
         <div class="header_center"></div>
         <div id="header_right" class="header_right">
@@ -44,4 +45,14 @@ window.onload=pageLayout;
         </div>
     </div>
 </div>
-
+<% if @breadcrumbs %>
+    <div class="breadcrumbs">
+        <% @breadcrumbs.each_with_index {|b, idx| %>
+            <% if idx > 0 %>
+            <div class="breadcrumb_split">&nbsp;|&nbsp;</div>
+            <% end %>
+            <div class="breadcrumb"><%= b %></div>
+        <% } %>
+    </div>
+<% end %>
+</div>

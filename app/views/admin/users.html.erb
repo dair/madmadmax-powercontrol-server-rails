@@ -1,0 +1,17 @@
+<%
+def user_edit_path(id)
+    return "user_edit/" + id
+end
+%>
+<div class="users_table">
+    <%  i = 1
+        for u in @list %>
+        <% row_type = i % 2 == 0 ? "users_table_row_even": "users_table_row_odd"
+           i = i + 1 %>
+        <div class="users_table_row <%= row_type %>">
+            <div class="users_table_cell"><%= link_to u['name'], user_edit_path(u['name']) %></div>
+            <div class="users_table_cell"><%= u['status'] == 'A'? "Админ": "Пользователь" %></div>
+        </div>
+    <% end %>
+</div>
+

@@ -6,11 +6,21 @@ class ApplicationController < ActionController::Base
   def setDefaultVars
     if (flash[:last_error])
       @last_error = flash[:last_error].join(", ")
+    else
+      @last_error = nil
     end
     @username = session[:userid]
 #    @title = "Power"
 #    @subtitle = "Power"
   end
+  
+  def addError(error)
+    if !flash[:last_error]
+      flash[:last_error] = Array.new
+    end
+    flash[:last_error].append(error)
+  end
+
 
   def render(options = nil, extra_options = {}, &block)
     setDefaultVars()

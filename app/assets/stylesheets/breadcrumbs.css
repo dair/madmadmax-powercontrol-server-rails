@@ -1,0 +1,22 @@
+.breadcrumbs {
+    background: #AAA;
+    padding: 10px;
+    display: inline-block;
+}
+.breadcrumb {
+    font-family: sans-serif;
+    background: #CCF;
+    display: inline-block;
+    padding: 1px 7px;
+    position: relative;
+    min-width: 75px;
+    text-align: center;
+}
+.breadcrumb:hover {
+    background: #AFF;
+    text-decoration: underline;
+}
+.breadcrumb_split {
+    font-weight: bold;
+    display: inline;
+}

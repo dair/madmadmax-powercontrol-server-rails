@@ -1,0 +1,19 @@
+.users_table {
+    display: table;
+    width: 100%;
+}
+.users_table_row{
+    display: table-row;
+}
+
+.users_table_row_odd {
+}
+.users_table_row_even {
+    background: #AAA;
+}
+.users_table_cell {
+    border: 1px;
+    border-style: solid;
+    display: table-cell;
+    padding: 5px;
+}

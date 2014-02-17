@@ -24,12 +24,26 @@ class Db < ActiveRecord::Base
             
             calc_hash = Digest::SHA2.hexdigest(hash + id)
             
-            if rows.size > 0
+            if rows.to_ary.size > 0
                 connection.update(%Q{update "user" set hash = #{sanitize(hash)} where name = #{sanitize(id)}})
             else
                 connection.insert(%Q{insert into "user" (name, hash) values (#{sanitize(id)}, #{sanitize(hash)})})
             end
         end
+    end
+
+    def self.getAllUsers()
+        rows = connection.select_all(%Q{select name, status from "user" order by name asc})
+        return rows
+    end
+
+    def self.getUser(name)
+        rows = connection.select_all(%Q{select name, status from "user" where name = #{sanitize(name)}})
+        ret = nil
+        if rows.to_ary.size == 1
+            ret = rows[0]
+        end
+        return ret
     end
 end
 
