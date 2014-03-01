@@ -20,7 +20,7 @@ class AdminController < ApplicationController
 
         @title = "Admin"
         @subtitle = "Menu"
-        @breadcrumbs = ["Главная"]
+        @breadcrumbs = [["Главная", 'main']]
     end
 
     def users
@@ -32,29 +32,68 @@ class AdminController < ApplicationController
         @title = 'Администрирование'
         @subtitle = 'Список пользователей'
 
-        @breadcrumbs = ["", 1, 2, 3]
+        @breadcrumbs = [["Главная", 'main'], ["Пользователи", 'users']]
     end
 
     def user_edit
-        param_name = params[:username]
         if !app_checkLogin
             redirect_to  :controller => 'application', :action => 'index'
         end
 
-        dbUser = Db.getUser(param_name)
+        param_name = params[:username]
 
-        if dbUser.nil?
-            addError("Такого пользователя нет")
-            redirect_to :action => 'users'
+        if param_name.nil?
+            @last_error = 'weeee';
+            @user = {}
+            @user["id"] = ""
+            @user["status"] = ""
+
+            title = "Добавление"
+        else
+            dbUser = Db.getUser(param_name)
+
+            if dbUser.nil?
+                addError("Такого пользователя нет")
+                redirect_to :action => 'users'
+                return
+            end
+            @user = {}
+            @user["id"] = dbUser["name"]
+            @user["status"] = dbUser["status"]
+        end
+
+        @breadcrumbs = [["Главная", 'main'], ["Пользователи", 'users'], ["Редактирование", '']]
+    end
+
+    def user_write
+        if !app_checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
             return
         end
-        @user = {}
-        @user["id"] = dbUser["name"]
-        @user["status"] = dbUser["status"]
 
-        puts '================================================='
-        puts @user["status"]
-        puts '================================================='
+        oldlogin = params[:oldlogin]
+        if oldlogin == session[:userid]
+            if !checkLogin
+                addError("Недостаточно прав для редактирования не себя");
+                redirect_to  :controller => 'user', :action => 'main'
+                return
+            end
+        end
 
+        newlogin = params[:login]
+        hash = params[:hash]
+        if oldlogin.empty?
+            oldlogin = newlogin
+        end
+
+        stored_hash = Digest::SHA3::hexdigest(hash + ':' + newlogin)
+        Db.addUser(oldlogin, newlogin, stored_hash)
+
+        if oldlogin == session[:userid]
+            redirect_to :controller => 'application', :action => 'logout'
+        else
+            redirect_to :action => 'users'
+        end
     end
 end
+

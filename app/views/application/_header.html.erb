@@ -27,6 +27,13 @@ $(document).ready(function() {
     pageLayout();
 });
 
+var errorString = "<%=j @last_error %>";
+
+if (errorString != '')
+{
+    $.modal("<div>" + errorString + "</div>");
+}
+
 </script>
 <div class="header" id="header">
     <div id="header_title" class="header_title">
@@ -51,8 +58,15 @@ $(document).ready(function() {
             <% if idx > 0 %>
             <div class="breadcrumb_split">&nbsp;|&nbsp;</div>
             <% end %>
-            <div class="breadcrumb"><%= b %></div>
+            <div class="breadcrumb">
+                <% if b[1] != '' %>
+                    <%= link_to b[0], { :action => b[1] } %>
+                <% else %>
+                    <%= b[0] %>
+                <% end %>
+            </div>
         <% } %>
     </div>
 <% end %>
 </div>
+

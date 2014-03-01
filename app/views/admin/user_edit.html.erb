@@ -5,37 +5,27 @@
         var p1 = $('input:password[name="pw1"]').val();
         var p2 = $('input:password[name="pw2"]').val();
 
-        if (p1 != p2)
+        if (p1 != p2 || p1 == '')
         {
-            alert("Пароль не пароль");
+            $.modal("Пароль не пароль");
             return false;
         }
 
-        var hash = CryptoJS.SHA3(p + ':' + n);
+        var hash = CryptoJS.SHA3(p1 + ':' + n);
         
         $('input:hidden[name="hash"]').val(hash);
         $('input:hidden[name="login"]').val(n);
         var checkbox_checked = $('input:checkbox[name="admin_status"]').is(':checked');
-        alert (checkbox_checked);
+        //$.modal("<div>" + checkbox_checked + "</div>");
         //$('input:hidden[name="status"]').val();
         var f = $("#hidden_form");
+        $('input:password[name="pw1"]').val('');
+        $('input:password[name="pw2"]').val('');
         f.submit();
         return false;
     }
-/*
-    function userEditOnLoad()
-    {
-    }
-
-    if (window.addEventListener)
-    {
-        window.addEventListener('load', userEditOnLoad, false);
-    }
-    else
-    {
-        window.attachEvent('onload', userEditOnLoad);
-    }
-*/
+    
+    $('input:hidden[name="oldlogin"]').val($('input:text[name="id"]').val());
 </script>
 
 <form id="user_form" onsubmit="return formSubmit();">
@@ -71,6 +61,7 @@
 
 <%= form_tag({:action => "user_write"}, :id => "hidden_form") do %>
     <%= hidden_field_tag 'hash' %>
+    <%= hidden_field_tag 'oldlogin' %>
     <%= hidden_field_tag 'login' %>
     <%= hidden_field_tag 'status' %>
 <% end %>

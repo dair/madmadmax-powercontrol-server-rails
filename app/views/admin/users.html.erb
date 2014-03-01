@@ -3,6 +3,9 @@ def user_edit_path(id)
     return "user_edit/" + id
 end
 %>
+
+<%= link_to "Добавить", "user_edit" , :class => "linkbutton" %>
+
 <div class="users_table">
     <%  i = 1
         for u in @list %>

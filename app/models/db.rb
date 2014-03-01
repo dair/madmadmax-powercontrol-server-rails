@@ -18,14 +18,14 @@ class Db < ActiveRecord::Base
         end
     end
 
-    def self.addUser(id, hash)
+    def self.addUser(oldid, id, hash)
         transaction do
-            rows = connection.select_all(%Q{select hash from "user" where name = #{sanitize(id)}})
+            rows = connection.select_all(%Q{select hash from "user" where name = #{sanitize(oldid)}})
             
             calc_hash = Digest::SHA2.hexdigest(hash + id)
             
             if rows.to_ary.size > 0
-                connection.update(%Q{update "user" set hash = #{sanitize(hash)} where name = #{sanitize(id)}})
+                connection.update(%Q{update "user" set hash = #{sanitize(hash)}, name = #{sanitize(id)} where name = #{sanitize(oldid)}})
             else
                 connection.insert(%Q{insert into "user" (name, hash) values (#{sanitize(id)}, #{sanitize(hash)})})
             end

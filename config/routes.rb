@@ -8,12 +8,14 @@ PowerControlServer::Application.routes.draw do
   
   post "application/login"
   post "application/logout"
+  get "application/logout"
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 
   get "admin/main"
   get "admin/users"
   get "admin/user_edit/:username", :to => 'admin#user_edit'
+  get "admin/user_edit"
   post "admin/user_write"
   get "admin/devices"
   get "admin/main"
