@@ -1,0 +1,25 @@
+<%
+def device_edit_path(id)
+    return "device_edit/" + id
+end
+%>
+
+<%= link_to "Добавить", "device_edit" , :class => "linkbutton" %>
+
+<div class="devices_table">
+    <% if @list.empty? %>
+        Устройств нет ваще
+    <% else %>
+        <%  i = 1
+            for u in @list %>
+            <% row_type = i % 2 == 0 ? "devices_table_row_even": "devices_table_row_odd"
+               i = i + 1 %>
+            <div class="devices_table_row <%= row_type %>">
+                <div class="devices_table_cell"><%= link_to u['id'], device_edit_path(u['id']) %></div>
+                <div class="devices_table_cell"><%= link_to u['name'], device_edit_path(u['id']) %></div>
+                <div class="devices_table_cell"><%= u['type'] == 'A'? "Броня": "Транспорт" %></div>
+            </div>
+        <% end %>
+    <% end %>
+</div>
+

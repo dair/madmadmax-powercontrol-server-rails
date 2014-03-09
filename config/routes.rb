@@ -18,6 +18,9 @@ PowerControlServer::Application.routes.draw do
   get "admin/user_edit"
   post "admin/user_write"
   get "admin/devices"
+  get "admin/device_edit/:dev_id", :to => 'admin#device_edit'
+  get "admin/device_edit"
+  post "admin/device_write"
   get "admin/main"
   get "user/main"
 

@@ -1,0 +1,95 @@
+<script>
+    function formSubmit()
+    {
+        var a_checked = $('input:radio[name="type"]:checked').val();
+        var errors = [];
+
+        var v_id = $('input:text[name="id"]').val();
+        var v_name = $('input:text[name="name"]').val();
+        if (null != v_id)
+        {
+            v_id = v_id.trim();
+            $('input:text[name="id"]').val(v_id);
+        }
+        if (null != v_name)
+        {
+            v_name = v_name.trim();
+            $('input:text[name="name"]').val(v_name);
+        }
+        
+        if (null == v_id || v_id.length == 0)
+        {
+            errors.push('ID пустым быть не может');
+        }
+        if (v_id == '0')
+        {
+            errors.push('ID не может быть 0');
+        }
+
+        if (null == v_name || v_name.length == 0)
+        {
+            errors.push('Название пустым быть не может');
+        }
+        
+        if (null == a_checked)
+        {
+            errors.push("Надо бы какой-нибудь тип указать");
+        }
+
+        if (errors.length > 0)
+        {
+            var errStr;
+            if (errors.length > 1)
+            {
+                errStr = "Ошибки:<br/>";
+            }
+            else
+            {
+                errStr = "Ошибка:<br/>";
+            }
+            for (var i = 0; i < errors.length; ++i)
+            {
+                errStr += errors[i] + '<br/>';
+            }
+
+            $.modal(errStr);
+            return false;
+        }
+        
+        return true;
+    }
+</script>
+<%= form_tag({:action => "device_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
+    <%= hidden_field_tag 'old_id', @device["id"] %>
+    <table>
+        <tbody>
+            <tr>
+                <td align="right">id</td>
+                <td><%= text_field_tag("id", @device["id"], :size => "100%", :maxlength => 10) %></td>
+            </tr>
+            <tr>
+                <td align="right">Название</td>
+                <td><%= text_field_tag("name", @device["name"], :size => "100%", :maxlength => 255) %></td>
+            </tr>
+            <tr>
+                <td align="right">Тип</td>
+                <td>
+                    <table>
+                        <tr>
+                            <td><%= radio_button_tag 'type', 'A', (@device["type"] == 'A')  %><%= label_tag 'type_armor', 'Броня' %></td>
+                        </tr>
+                        <tr>
+                            <td><%= radio_button_tag 'type', 'V', (@device["type"] == 'V') %><%= label_tag 'type_vehicle', 'Транспорт' %></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <%= submit_tag("Сохранить") %>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+<% end %>

@@ -45,5 +45,31 @@ class Db < ActiveRecord::Base
         end
         return ret
     end
+
+    def self.getAllDevices()
+        rows = connection.select_all(%Q{select id, name, type from device order by name asc})
+        return rows
+    end
+
+    def self.getDevice(id)
+        rows = connection.select_all(%Q{select id, name, type from device where id = #{sanitize(id)}})
+        ret = nil
+        if rows.to_ary.size == 1
+            ret = rows[0]
+        end
+        return ret
+    end
+
+    def self.addDevice(oldid, id, name, type)
+        transaction do
+            rows = connection.select_all(%Q{select name from device where id = #{sanitize(oldid)}})
+            
+            if rows.to_ary.size > 0
+                connection.update(%Q{update device set id = #{sanitize(id)}, name = #{sanitize(name)}, type = #{sanitize(type)} where id = #{sanitize(oldid)}})
+            else
+                connection.insert(%Q{insert into device (id, name, type) values (#{sanitize(id)}, #{sanitize(name)}, #{sanitize(type)})})
+            end
+        end
+    end
 end
 

@@ -16,16 +16,18 @@ class AdminController < ApplicationController
     def main
         if !checkLogin
             redirect_to  :controller => 'application', :action => 'index'
+            return
         end
 
-        @title = "Admin"
-        @subtitle = "Menu"
+        @title = "Администрирование"
+        @subtitle = "Главное меню"
         @breadcrumbs = [["Главная", 'main']]
     end
 
     def users
         if !checkLogin
             redirect_to  :controller => 'application', :action => 'index'
+            return
         end
 
         @list = Db.getAllUsers()
@@ -38,6 +40,7 @@ class AdminController < ApplicationController
     def user_edit
         if !app_checkLogin
             redirect_to  :controller => 'application', :action => 'index'
+            return
         end
 
         param_name = params[:username]
@@ -94,6 +97,60 @@ class AdminController < ApplicationController
         else
             redirect_to :action => 'users'
         end
+    end
+
+    def devices
+        if !app_checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+
+        @list = Db.getAllDevices()
+        @title = "Администрирование"
+        @subtitle = "Устройства"
+        @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices']]
+    end
+    
+    def device_edit
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+
+        dev_id = id0(params[:dev_id])
+        
+        @device = {}
+        if dev_id != 0
+            dbdata = Db.getDevice(dev_id)
+            if not dbdata.nil?
+                @device["id"] = dbdata["id"].to_s
+                @device["name"] = dbdata["name"]
+                @device["type"] = dbdata["type"]
+            end
+        end
+        @title = "Администрирование"
+        if dev_id != 0
+            @subtitle = "Редактирование устройства"
+        else
+            @subtitle = "Добавление устройства"
+        end
+        @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices'], [@subtitle, ""]]
+    end
+
+    def device_write
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+
+        old_id = id0(params["old_id"])
+        id = id0(params["id"])
+        name = params["name"]
+        type = params["type"]
+
+        Db.addDevice(old_id, id, name, type)
+    
+        redirect_to :action => 'devices'
     end
 end
 

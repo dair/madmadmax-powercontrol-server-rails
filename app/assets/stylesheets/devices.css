@@ -1,0 +1,19 @@
+.devices_table {
+    display: table;
+    width: 100%;
+}
+.devices_table_row{
+    display: table-row;
+}
+
+.devices_table_row_odd {
+}
+.devices_table_row_even {
+    background: #AAA;
+}
+.devices_table_cell {
+    border: 1px;
+    border-style: solid;
+    display: table-cell;
+    padding: 5px;
+}
