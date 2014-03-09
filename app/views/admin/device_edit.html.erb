@@ -76,10 +76,10 @@
                 <td>
                     <table>
                         <tr>
-                            <td><%= radio_button_tag 'type', 'A', (@device["type"] == 'A')  %><%= label_tag 'type_armor', 'Броня' %></td>
+                            <td><%= radio_button_tag 'type', 'A', (@device["type"] == 'A')  %><%= label_tag 'type_armor', 'Броня', {:for => "type_A"} %></td>
                         </tr>
                         <tr>
-                            <td><%= radio_button_tag 'type', 'V', (@device["type"] == 'V') %><%= label_tag 'type_vehicle', 'Транспорт' %></td>
+                            <td><%= radio_button_tag 'type', 'V', (@device["type"] == 'V') %><%= label_tag 'type_vehicle', 'Транспорт', {:for => "type_V"} %></td>
                         </tr>
                     </table>
                 </td>

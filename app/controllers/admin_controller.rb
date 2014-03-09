@@ -1,4 +1,5 @@
 # coding: utf-8
+require 'digest/md5'
 
 class AdminController < ApplicationController
     protect_from_forgery with: :exception
@@ -151,6 +152,63 @@ class AdminController < ApplicationController
         Db.addDevice(old_id, id, name, type)
     
         redirect_to :action => 'devices'
+    end
+
+    def map
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+        
+        mapData = Db.mapCoords()
+        if mapData.nil?
+            @map = {}
+        else
+            @map = mapData
+        end
+        @title = "Администрирование"
+        @subtitle = "Карта местности"
+        @breadcrumbs = [["Главная", 'main'], [@subtitle, 'map']]
+    end
+
+    def map_write
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+        
+        rred = nil
+        content_type = nil
+        if not params[:map_image].nil?
+            fin = params[:map_image]
+
+            while not fin.eof?
+                puts "READ"
+                chunk = params[:map_image].read
+                if not chunk.nil?
+                    if rred.nil?
+                        rred = chunk
+                    else
+                        rred = rred + chunk
+                    end
+                end
+            end
+            
+            content_type = fin.content_type
+        end
+
+        latitude = 0
+        if not params[:latitude].nil?
+            latitude = params[:latitude].to_f
+        end
+        longitude = 0
+        if not params[:longitude].nil?
+            longitude = params[:longitude].to_f
+        end
+        
+        Db.setMap(rred, content_type, longitude, latitude)
+
+        redirect_to :action => 'map'
     end
 end
 

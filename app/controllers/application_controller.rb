@@ -109,4 +109,13 @@ class ApplicationController < ActionController::Base
         redirect_to :action => "index"
         return
     end
+    
+    def map_image
+        if !checkLogin
+            return
+        end
+        mapImage = Db.mapImage()
+        send_data mapImage[:map], :type => mapImage[:content_type], :disposition => 'inline'
+    end
+
 end

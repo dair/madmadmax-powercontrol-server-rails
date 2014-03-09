@@ -86,4 +86,10 @@ CREATE INDEX dt_recv_idx ON public.point
 	);
 -- ddl-end --
 
+CREATE TABLE public.map (
+    map bytea,
+    latitude double precision,
+    longitude double precision
+);
 
+ALTER DATABASE database_name SET bytea_output TO 'escape';

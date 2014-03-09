@@ -1,0 +1,8 @@
+<%= image_tag url_for(:controller => "admin", :action => "map_image") %>
+<%= form_tag 'map_write', {:multipart => true} do %>
+    <p><label for="upload">Заменить карту</label>: <%= file_field_tag 'map_image' %></p>
+    <p><label for="latitude">Широта</label>: <%= text_field_tag("latitude", @map["latitude"], :maxlength => 30) %></p>
+    <p><label for="longitude">Долгота</label>: <%= text_field_tag("longitude", @map["longitude"], :maxlength => 30) %></p>
+
+    <%= submit_tag "Сохранить" %>
+<% end %>

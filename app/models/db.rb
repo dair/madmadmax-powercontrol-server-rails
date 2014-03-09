@@ -1,3 +1,5 @@
+require 'base64'
+
 class Db < ActiveRecord::Base
     
     def self.checkCredentials(id, hash)
@@ -68,6 +70,51 @@ class Db < ActiveRecord::Base
                 connection.update(%Q{update device set id = #{sanitize(id)}, name = #{sanitize(name)}, type = #{sanitize(type)} where id = #{sanitize(oldid)}})
             else
                 connection.insert(%Q{insert into device (id, name, type) values (#{sanitize(id)}, #{sanitize(name)}, #{sanitize(type)})})
+            end
+        end
+    end
+
+    def self.mapImage()
+        rows = connection.select_all(%Q{select map, content_type from map})
+        ret = nil
+        if rows.to_ary.size == 1
+            encoded = rows[0]["map"]
+            coded = ActiveRecord::Base.connection.unescape_bytea(encoded)
+            ret = {:map => Base64.decode64(coded), :content_type => rows[0]["content_type"]}
+        end
+        return ret
+    end
+
+    def self.mapCoords()
+        rows = connection.select_all(%Q{select latitude, longitude from map})
+        ret = nil
+        if rows.to_ary.size == 1
+            ret = rows[0]
+        end
+        return ret
+    end
+
+    def self.setMap(raw, content_type, longitude, latitude)
+        transaction do
+            fields = {}
+            if not raw.nil?
+                coded = Base64.encode64(raw)
+                encoded = ActiveRecord::Base.connection.escape_bytea(coded)
+                fields["map"] = sanitize(encoded)
+            end
+            if not content_type.nil?
+                fields["content_type"] = sanitize(content_type)
+            end
+            if longitude != 0 and latitude != 0
+                fields["longitude"] = sanitize(longitude)
+                fields["latitude"] = sanitize(latitude)
+            end
+            
+            dbcoords = mapCoords()
+            if dbcoords.nil?
+                connection.insert(%Q{insert into map (} + fields.keys.join(', ') + %Q{) values (} + fields.values.join(', ') + %Q{)})
+            else
+                connection.update(%Q{update map set } + fields.map {|k,v| k + ' = ' + v}.join(', '))
             end
         end
     end
