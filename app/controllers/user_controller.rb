@@ -9,4 +9,20 @@ class UserController < ApplicationController
         @title = "Устройства контроля топлива"
         @subtitle = "Карта"
     end
+
+    def data
+        if !checkLogin
+            render :nothing => true
+            return
+        end
+        ids = []
+        unless params[:ids].nil?
+            ids = params[:ids].split(',').map {|i| id0(i)}.uniq
+        end
+        time = id0(params[:time])
+
+        points = Db.points(ids, time)
+
+        render :json => points
+    end
 end

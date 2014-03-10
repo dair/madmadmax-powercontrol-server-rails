@@ -118,5 +118,31 @@ class Db < ActiveRecord::Base
             end
         end
     end
+
+    def self.points(ids, time)
+        clauses = []
+        if not ids.nil? and ids.length > 0
+            clauses.push('device_id in (' + ids.join(', ') + ')')
+        end
+        if time > 0
+            clauses.push('dt > to_timestamp(' + time.to_s + ')')
+        end
+        sql = 'select device_id, EXTRACT(epoch FROM dt) as dt, latitude, longitude from point'
+        if not clauses.empty?
+            sql = sql + ' where ' + clauses.join(' and ')
+        end
+        sql += ' order by device_id asc, dt asc'
+
+        rows = connection.select_all(sql)
+        ret = {}
+        for row in rows
+            dev_id = Integer(row["device_id"])
+            if ret[dev_id].nil?
+                ret[dev_id] = {}
+            end
+            ret[dev_id][Float(row['dt'])] = {:y => Float(row['latitude']), :x => Float(row['longitude'])}
+        end
+        return ret
+    end
 end
 

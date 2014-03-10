@@ -27,6 +27,7 @@ PowerControlServer::Application.routes.draw do
   post "admin/map_write"
   get "user/main"
   get "user/map_image"
+  get "user/data"
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase
