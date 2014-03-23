@@ -7,7 +7,7 @@ end
 <% if not @unknown_list.empty? %>
     <h2>Неизвестные устройства</h2>
     <%  i = 1
-        for u in @known_list %>
+        for u in @unknown_list %>
         <% row_type = i % 2 == 0 ? "devices_table_row_even": "devices_table_row_odd"
            i = i + 1 %>
         <div class="devices_table_row <%= row_type %>">
@@ -18,8 +18,9 @@ end
 <% end %>
 
 <div class="devices_table">
+    <h2>Известные устройства</h2>
     <% if @known_list.empty? %>
-        Устройств нет ваще
+        Известных устройств нет
     <% else %>
         <%  i = 1
             for u in @known_list %>

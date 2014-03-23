@@ -69,12 +69,12 @@ class Db < ActiveRecord::Base
 
     def self.addDevice(id, name, type)
         transaction do
-            rows = connection.select_all(%Q{select name from device where id = #{sanitize(id)}})
+            rows = connection.select_all(%Q{select id, name from device where id = #{sanitize(id)}})
             
             if rows.to_ary.size > 0
                 connection.update(%Q{update device set name = #{sanitize(name)}, type = #{sanitize(type)} where id = #{sanitize(id)}})
             else
-                connection.insert(%Q{insert into device (id, name, type) values (#{sanitize(id)}, #{sanitize(name)}, #{sanitize(type)})})
+                connection.insert(%Q{insert into device (id, name, type) values (#{sanitize(id)}, #{name.nil? ? 'NULL' : sanitize(name)}, #{type.nil? ? "'V'" : sanitize(type)})})
             end
         end
     end
@@ -148,6 +148,19 @@ class Db < ActiveRecord::Base
             ret[dev_id][Float(row['dt'])] = {:y => Float(row['latitude']), :x => Float(row['longitude'])}
         end
         return ret
+    end
+
+    def self.addDeviceData(id, lat, lon, spd, t)
+        repeat = true
+        while repeat
+            begin
+                connection.insert("insert into point (device_id, latitude, longitude, speed, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(spd)}, TIMESTAMP WITH TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
+                repeat = false
+            rescue ActiveRecord::InvalidForeignKey
+                addDevice(id, nil, nil)
+            end
+        end
+        return true
     end
 end
 

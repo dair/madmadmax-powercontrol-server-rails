@@ -151,12 +151,11 @@ class AdminController < ApplicationController
             return
         end
 
-        old_id = params["old_id"]
-        id = id0(params["id"])
+        id = params["id"]
         name = params["name"]
         type = params["type"]
 
-        Db.addDevice(old_id, id, name, type)
+        Db.addDevice(id, name, type)
     
         redirect_to :action => 'devices'
     end

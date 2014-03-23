@@ -26,11 +26,12 @@ CREATE INDEX name_idx ON public.device
 
 -- object: public.point | type: TABLE --
 CREATE TABLE public.point(
+	device_id varchar(255) NOT NULL,
 	dt timestamp NOT NULL,
 	dt_recv timestamp NOT NULL DEFAULT now(),
 	latitude double precision NOT NULL,
 	longitude double precision NOT NULL,
-	device_id varchar(255) NOT NULL
+	speed double precision NOT NULL
 );
 -- ddl-end --
 -- object: dt_idx | type: INDEX --
