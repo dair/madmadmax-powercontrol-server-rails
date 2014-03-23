@@ -106,7 +106,8 @@ class AdminController < ApplicationController
             return
         end
 
-        @list = Db.getAllDevices()
+        @known_list = Db.getAllKnownDevices()
+        @unknown_list = Db.getAllUnknownDevices()
         @title = "Администрирование"
         @subtitle = "Устройства"
         @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices']]
@@ -118,13 +119,19 @@ class AdminController < ApplicationController
             return
         end
 
-        dev_id = id0(params[:dev_id])
+        dev_id = params[:dev_id]
         
+        if dev_id.nil? or dev_id.empty?
+            redirect_to :action => 'devices'
+            addError('Добавить устройство можно только из списка')
+            return
+        end
+
         @device = {}
-        if dev_id != 0
+        if not dev_id.nil? and not dev_id.empty?
             dbdata = Db.getDevice(dev_id)
             if not dbdata.nil?
-                @device["id"] = dbdata["id"].to_s
+                @device["id"] = dbdata["id"]
                 @device["name"] = dbdata["name"]
                 @device["type"] = dbdata["type"]
             end
@@ -144,7 +151,7 @@ class AdminController < ApplicationController
             return
         end
 
-        old_id = id0(params["old_id"])
+        old_id = params["old_id"]
         id = id0(params["id"])
         name = params["name"]
         type = params["type"]

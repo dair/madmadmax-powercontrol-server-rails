@@ -8,7 +8,7 @@ SET check_function_bodies = false;
 
 -- object: public.device | type: TABLE --
 CREATE TABLE public.device(
-	id integer NOT NULL,
+	id varchar(255) NOT NULL,
 	name varchar(255) DEFAULT NULL,
 	type char NOT NULL DEFAULT 'V',
 	CONSTRAINT device_pk_id PRIMARY KEY (id)
@@ -30,7 +30,7 @@ CREATE TABLE public.point(
 	dt_recv timestamp NOT NULL DEFAULT now(),
 	latitude double precision NOT NULL,
 	longitude double precision NOT NULL,
-	device_id integer NOT NULL
+	device_id varchar(255) NOT NULL
 );
 -- ddl-end --
 -- object: dt_idx | type: INDEX --

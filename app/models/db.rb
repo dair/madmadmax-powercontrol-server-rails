@@ -48,8 +48,13 @@ class Db < ActiveRecord::Base
         return ret
     end
 
-    def self.getAllDevices()
-        rows = connection.select_all(%Q{select id, name, type from device order by name asc})
+    def self.getAllKnownDevices()
+        rows = connection.select_all(%Q{select id, name, type from device where name is not null order by name asc})
+        return rows
+    end
+
+    def self.getAllUnknownDevices()
+        rows = connection.select_all(%Q{select id from device where name is null order by id asc})
         return rows
     end
 
@@ -62,12 +67,12 @@ class Db < ActiveRecord::Base
         return ret
     end
 
-    def self.addDevice(oldid, id, name, type)
+    def self.addDevice(id, name, type)
         transaction do
-            rows = connection.select_all(%Q{select name from device where id = #{sanitize(oldid)}})
+            rows = connection.select_all(%Q{select name from device where id = #{sanitize(id)}})
             
             if rows.to_ary.size > 0
-                connection.update(%Q{update device set id = #{sanitize(id)}, name = #{sanitize(name)}, type = #{sanitize(type)} where id = #{sanitize(oldid)}})
+                connection.update(%Q{update device set name = #{sanitize(name)}, type = #{sanitize(type)} where id = #{sanitize(id)}})
             else
                 connection.insert(%Q{insert into device (id, name, type) values (#{sanitize(id)}, #{sanitize(name)}, #{sanitize(type)})})
             end
@@ -136,7 +141,7 @@ class Db < ActiveRecord::Base
         rows = connection.select_all(sql)
         ret = {}
         for row in rows
-            dev_id = Integer(row["device_id"])
+            dev_id = row["device_id"]
             if ret[dev_id].nil?
                 ret[dev_id] = {}
             end
