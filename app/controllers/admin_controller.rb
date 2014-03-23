@@ -108,6 +108,9 @@ class AdminController < ApplicationController
 
         @known_list = Db.getAllKnownDevices()
         @unknown_list = Db.getAllUnknownDevices()
+        @params = Db.getCommonParameters()
+
+
         @title = "Администрирование"
         @subtitle = "Устройства"
         @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices']]

@@ -162,5 +162,23 @@ class Db < ActiveRecord::Base
         end
         return true
     end
+
+    def self.getCommonParameters()
+        rows = connection.select_all("select name, value from parameters where device_id is null")
+        ret = {}
+        for row in rows
+            ret[row["name"]] = row["value"]
+        end
+        return ret
+    end
+    
+    def self.getParametersForDevice(dev_id)
+        rows = connection.select_all("select name, value from parameters where device_id = #{sanitize(dev_id)}")
+        ret = {}
+        for row in rows
+            ret[row["name"]] = row["value"]
+        end
+        return ret
+    end
 end
 

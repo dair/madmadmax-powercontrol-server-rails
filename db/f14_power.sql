@@ -93,4 +93,22 @@ CREATE TABLE public.map (
     longitude double precision
 );
 
+-- parameters
+CREATE TABLE public.parameters (
+    name varchar(10) not null,
+    device_id varchar(255),
+    value varchar(20) not null
+);
+ALTER TABLE public.parameters ADD CONSTRAINT device_params_fk FOREIGN KEY (device_id)
+REFERENCES public.device (id) MATCH FULL
+ON DELETE CASCADE ON UPDATE CASCADE NOT DEFERRABLE;
+
+CREATE INDEX parameters_idx ON public.parameters
+    USING btree
+    (
+        device_id ASC NULLS FIRST,
+        name ASC NULLS FIRST
+    );
+
 ALTER DATABASE database_name SET bytea_output TO 'escape';
+
