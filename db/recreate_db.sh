@@ -16,7 +16,7 @@ dropdb -h localhost -U "${USER}" "${DB}"
 
 createdb -h localhost -U "${USER}" -E UTF-8 "${DB}"
 
-psql -h localhost -U "${USER}" "${DB}" < "$FILE"
+cat "$FILE" | sed "s/__DATABASE_NAME__/${DB}/g" | psql -h localhost -U "${USER}" "${DB}"
 
 insert=`ruby "$DIR"/admin_password.rb admin admin`
 echo $insert | psql -h localhost -U "${USER}" "${DB}"

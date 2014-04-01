@@ -158,7 +158,7 @@ class AdminController < ApplicationController
         name = params["name"]
         type = params["type"]
 
-        Db.addDevice(id, name, type)
+        Db.editDevice(id, name, type)
     
         redirect_to :action => 'devices'
     end

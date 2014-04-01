@@ -1,0 +1,9 @@
+private static final String NET_CMD_TIMEOUT = "timeout";
+    таймаут ожидания ответа от сервера
+private static final String NET_CMD_PING = "ping";
+    интервал в миллисекундах между пингами, если нет данных от GPS
+private static final String NET_CMD_GPS_DELAY = "gps";
+    через сколько миллисекунд просить данных от GPS
+private static final String NET_CMD_SPEED_NUM = "spdn";
+    сколько мгновенных скоростей считать за среднюю?
+

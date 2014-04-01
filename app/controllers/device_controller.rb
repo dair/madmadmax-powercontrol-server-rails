@@ -47,4 +47,26 @@ class DeviceController < ApplicationController
         res = addP(params)
         render :json => res
     end
+
+    def auth
+        dev_id = params["id"]
+        dev_desc = params["desc"]
+        ret = {}
+        ret["code"] = false
+        unless dev_id.nil?
+            dev = Db.getDevice(dev_id)
+            if dev.nil?
+                Db.addDevice(dev_id, dev_desc)
+                ret["code"] = false
+            else
+                if dev["type"].nil?
+                    ret["code"] = false
+                else
+                    ret["code"] = true
+                    ret["a"] = form_authenticity_token
+                end
+            end
+        end
+        render :json => ret
+    end
 end
