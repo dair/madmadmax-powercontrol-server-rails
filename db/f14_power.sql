@@ -93,24 +93,59 @@ CREATE TABLE public.map (
     longitude double precision
 );
 
--- parameters
-CREATE TABLE public.parameters (
-    name varchar(10) not null,
-    device_id varchar(255),
-    value varchar(20) not null,
+-- parameter
 
-    CONSTRAINT name_device_pk PRIMARY KEY (name, device_id)
+CREATE TABLE public.parameter (
+    id varchar(20) not null,
+    name varchar(255) not null,
+    CONSTRAINT id_parameter_pk PRIMARY KEY (id)
 );
 
-ALTER TABLE public.parameters ADD CONSTRAINT device_params_fk FOREIGN KEY (device_id)
-REFERENCES public.device (id) MATCH FULL
-ON DELETE CASCADE ON UPDATE CASCADE NOT DEFERRABLE;
+-- command: id, date
+CREATE TABLE public.command (
+    id serial not null CONSTRAINT command_pk PRIMARY KEY,
+    dt timestamp NOT NULL default now(),
+    user_name varchar(42) not null REFERENCES public.user MATCH FULL
+);
+-- command: numeric id, name, value
 
-CREATE INDEX parameters_idx ON public.parameters
+CREATE TABLE public.command_data (
+    id serial not null REFERENCES public.command MATCH FULL,
+    param_id varchar(20) not null REFERENCES public.parameter MATCH FULL,
+    value varchar(20) not null,
+
+    CONSTRAINT num_param_id_command_pk PRIMARY KEY (id, param_id)
+);
+
+--ALTER TABLE public.command ADD CONSTRAINT command_parameter_fk FOREIGN KEY (param_id)
+--    REFERENCES public.parameter (id) MATCH FULL
+--    ON DELETE CASCADE ON UPDATE CASCADE NOT DEFERRABLE;
+
+CREATE INDEX command_id_idx ON public.command_data
     USING btree
     (
-        device_id ASC NULLS FIRST,
-        name ASC NULLS FIRST
+        id ASC NULLS FIRST
+    );
+
+-- command_device: relation between command and device
+
+CREATE TABLE public.command_device (
+    command_id serial not null REFERENCES public.command (id) ON DELETE CASCADE,
+    device_id varchar(255) REFERENCES public.device ON DELETE CASCADE,
+
+    CONSTRAINT command_device_pk_pk PRIMARY KEY (command_id, device_id)
+);
+
+CREATE INDEX command_device__device_id_idx ON public.command_device
+    USING btree
+    (
+        device_id ASC NULLS FIRST
+    );
+
+CREATE INDEX command_device__command_id_idx ON public.command_device
+    USING btree
+    (
+        command_id ASC NULLS FIRST
     );
 
 ALTER DATABASE __DATABASE_NAME__ SET bytea_output TO 'escape';

@@ -16,7 +16,11 @@ dropdb -h localhost -U "${USER}" "${DB}"
 
 createdb -h localhost -U "${USER}" -E UTF-8 "${DB}"
 
-cat "$FILE" | sed "s/__DATABASE_NAME__/${DB}/g" | psql -h localhost -U "${USER}" "${DB}"
+cat "$FILE" | sed "s/__DATABASE_NAME__/${DB}/g" | psql -h localhost -e -U "${USER}" "${DB}"
 
 insert=`ruby "$DIR"/admin_password.rb admin admin`
-echo $insert | psql -h localhost -U "${USER}" "${DB}"
+echo $insert | psql -h localhost -e -U "${USER}" "${DB}"
+
+echo "Creating default parameters"
+cat "$DIR"/parameters.sql | psql -h localhost -e -U "${USER}" "${DB}"
+
