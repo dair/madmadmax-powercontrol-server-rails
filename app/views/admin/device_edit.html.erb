@@ -44,7 +44,7 @@
         return true;
     }
 </script>
-<%= render partial: "parameters" %>
+<%= render partial: "parameters", locals: { dev_id: @device["id"]} %>
 <%= form_tag({:action => "device_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
     <%= hidden_field_tag 'id', @device["id"] %>
     <table>

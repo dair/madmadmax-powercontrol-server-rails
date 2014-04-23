@@ -4,7 +4,7 @@ def device_edit_path(id)
 end
 %>
 
-<%= render partial: "parameters" %>
+<%= render partial: "parameters", dev_id: nil %>
 
 <% if not @unknown_list.empty? %>
     <h2>Неизвестные устройства</h2>

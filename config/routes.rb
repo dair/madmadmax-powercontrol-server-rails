@@ -25,6 +25,8 @@ PowerControlServer::Application.routes.draw do
   get "admin/map"
   get "admin/map_image"
   post "admin/map_write"
+  get "admin/param_edit"
+  post "admin/param_write"
   get "user/main"
   get "user/map_image"
   get "user/data"

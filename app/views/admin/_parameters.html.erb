@@ -1,12 +1,25 @@
 <% if @params %>
     <h2>Параметры</h2>
     <table>
-        <% for param in @params.keys %>
-            <tr>
-                <td align=right><%= @params[param]["name"]  %>:&nbsp;</td>
-                <td><%= @params[param]["value"] %></td>
-            </tr>
-        <% end %>
+        <tr>
+            <td>
+                <table>
+                    <% for param in @params.keys %>
+                        <tr>
+                            <td align=right><%= @params[param]["name"]  %>:&nbsp;</td>
+                            <td><%= @params[param]["value"] %></td>
+                        </tr>
+                    <% end %>
+                </table>
+            </td>
+            <td>
+                <%= params = { :action => "param_edit" }
+                    if defined? dev_id
+                        params[:dev_id] = dev_id
+                    end
+                    link_to "Редактировать", params, :class => "linkbutton" %>
+            </td>
+        <tr>
     </table>
 <% end %>
 
