@@ -167,12 +167,22 @@ class Db < ActiveRecord::Base
         return true
     end
 
-    def self.getCommonParameters()
-        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where command.device_id is NULL and command.id = command_data.id order by command.id desc")
+    def self.getAllParameters()
+        all_params = connection.select_all("select id, name from parameter")
         res = {}
+        for row in all_params
+            res[row["id"]] = {"name" => row["name"]}
+        end
+        return res
+    end
+
+    def self.getCommonParameters()
+        res = getAllParameters()
+        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where command.device_id is NULL and command.id = command_data.id order by command.id desc")
+
         for row in cmds
-            unless res.has_key?(row["param_id"])
-                res[row["param_id"]] = row["value"]
+            if res.has_key?(row["param_id"]) and not res[row["param_id"]].has_key?("value")
+                res[row["param_id"]]["value"] = row["value"]
             end
         end
         return res
@@ -180,10 +190,10 @@ class Db < ActiveRecord::Base
 
     def self.getParametersForDevice(dev_id)
         cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where (command.device_id = #{sanitize(dev_id)} or command.device_id is null) and command.id = command_data.id order by command.id desc")
-        res = {}
+        res = getAllParameters()
         for row in cmds
-            unless res.has_key?(row["param_id"])
-                res[row["param_id"]] = row["value"]
+            if res.has_key?(row["param_id"]) and not res[row["param_id"]].has_key?("value")
+                res[row["param_id"]]["value"] = row["value"]
             end
         end
         return res

@@ -106,6 +106,7 @@ class AdminController < ApplicationController
             return
         end
 
+        @params = Db.getCommonParameters()
         @known_list = Db.getAllKnownDevices()
         @unknown_list = Db.getAllUnknownDevices()
 
@@ -129,7 +130,9 @@ class AdminController < ApplicationController
         end
 
         @device = {}
+        @params = {}
         if not dev_id.nil? and not dev_id.empty?
+            @params = Db.getParametersForDevice(dev_id)
             dbdata = Db.getDevice(dev_id)
             if not dbdata.nil?
                 @device["id"] = dbdata["id"]
@@ -190,7 +193,7 @@ class AdminController < ApplicationController
             fin = params[:map_image]
 
             while not fin.eof?
-                puts "READ"
+                #puts "READ"
                 chunk = params[:map_image].read
                 if not chunk.nil?
                     if rred.nil?
