@@ -168,21 +168,25 @@ class Db < ActiveRecord::Base
     end
 
     def self.getCommonParameters()
-        rows = connection.select_all("select name, value from parameters where device_id is null")
-        ret = {}
-        for row in rows
-            ret[row["name"]] = row["value"]
+        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where command.device_id is NULL and command.id = command_data.id order by command.id desc")
+        res = {}
+        for row in cmds
+            unless res.has_key?(row["param_id"])
+                res[row["param_id"]] = row["value"]
+            end
         end
-        return ret
+        return res
     end
-    
+
     def self.getParametersForDevice(dev_id)
-        rows = connection.select_all("select name, value from parameters where device_id = #{sanitize(dev_id)}")
-        ret = {}
-        for row in rows
-            ret[row["name"]] = row["value"]
+        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where (command.device_id = #{sanitize(dev_id)} or command.device_id is null) and command.id = command_data.id order by command.id desc")
+        res = {}
+        for row in cmds
+            unless res.has_key?(row["param_id"])
+                res[row["param_id"]] = row["value"]
+            end
         end
-        return ret
+        return res
     end
 end
 

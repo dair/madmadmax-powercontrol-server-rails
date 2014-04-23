@@ -104,6 +104,7 @@ CREATE TABLE public.parameter (
 -- command: id, date
 CREATE TABLE public.command (
     id serial not null CONSTRAINT command_pk PRIMARY KEY,
+    device_id varchar(255) REFERENCES public.device ON DELETE CASCADE,
     dt timestamp NOT NULL default now(),
     user_name varchar(42) not null REFERENCES public.user MATCH FULL
 );
@@ -125,27 +126,6 @@ CREATE INDEX command_id_idx ON public.command_data
     USING btree
     (
         id ASC NULLS FIRST
-    );
-
--- command_device: relation between command and device
-
-CREATE TABLE public.command_device (
-    command_id serial not null REFERENCES public.command (id) ON DELETE CASCADE,
-    device_id varchar(255) REFERENCES public.device ON DELETE CASCADE,
-
-    CONSTRAINT command_device_pk_pk PRIMARY KEY (command_id, device_id)
-);
-
-CREATE INDEX command_device__device_id_idx ON public.command_device
-    USING btree
-    (
-        device_id ASC NULLS FIRST
-    );
-
-CREATE INDEX command_device__command_id_idx ON public.command_device
-    USING btree
-    (
-        command_id ASC NULLS FIRST
     );
 
 ALTER DATABASE __DATABASE_NAME__ SET bytea_output TO 'escape';
