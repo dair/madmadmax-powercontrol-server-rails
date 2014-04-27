@@ -198,5 +198,20 @@ class Db < ActiveRecord::Base
         end
         return res
     end
+
+    def self.writeParams(dev_id, username, params)
+        transaction do
+            sql = %Q{insert into command (device_id, user_name) values (#{sanitize(dev_id)}, #{sanitize(username)}) returning id}
+            cmds = connection.select_all(sql)
+            id = cmds[0]['id']
+
+            params.each do |key, value|
+                sql= %Q{insert into command_data (id, param_id, value) values (#{id}, #{sanitize(key)}, #{sanitize(value)})}
+                connection.insert(sql)
+            end
+
+            return id
+        end
+    end
 end
 

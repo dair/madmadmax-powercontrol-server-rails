@@ -1,3 +1,9 @@
+<%
+def create_url(url)
+    return url
+end
+%>
+
 <script>
 function headerLayout()
 {
@@ -60,7 +66,7 @@ if (errorString != '')
             <% end %>
             <div class="breadcrumb">
                 <% if b[1] != '' %>
-                    <%= link_to b[0], { :action => b[1] } %>
+                    <%= link_to b[0], create_url(b[1]) %>
                 <% else %>
                     <%= b[0] %>
                 <% end %>

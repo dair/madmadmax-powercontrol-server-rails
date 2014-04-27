@@ -1,0 +1,22 @@
+<%= form_tag({:action => "param_write"}, {:id => "device_form"}) do %>
+    <% if defined? @device_id %>
+        <%= hidden_field_tag 'dev_id', @device_id %>
+    <% end %>
+    <table>
+        <tbody>
+            <% for id in @params.keys %>
+                <tr>
+                    <td align=right><%= @params[id]['name'] %>:&nbsp;</td>
+                    <%= hidden_field_tag 'orig_' + id, @params[id]['value'] %>
+                    <td><%= text_field_tag('field_' + id, @params[id]['value'], :size => "100%", :maxlength => 100) %></td>
+                </tr>
+            <% end %>
+            <tr>
+                <td/>
+                <td>
+                    <%= submit_tag("Сохранить") %>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+<% end %>

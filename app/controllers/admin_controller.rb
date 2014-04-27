@@ -6,6 +6,10 @@ class AdminController < ApplicationController
     
     alias :app_checkLogin :checkLogin
 
+    def dummy(r)
+        return r
+    end
+
     def checkLogin
         #return super and session[:userstatus] == 'A'
         ret = super
@@ -146,7 +150,7 @@ class AdminController < ApplicationController
         else
             @subtitle = "Добавление устройства"
         end
-        @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices'], [@subtitle, ""]]
+        @breadcrumbs = [["Главная", '/admin/main'], ["Устройства", '/admin/devices'], [@subtitle, ""]]
     end
 
     def device_write
@@ -219,6 +223,58 @@ class AdminController < ApplicationController
         Db.setMap(rred, content_type, longitude, latitude)
 
         redirect_to :action => 'map'
+    end
+
+    def param_edit
+        dev_id = params["dev_id"]
+        device = nil
+        if dev_id.nil?
+            @params = Db.getCommonParameters()
+        else
+            device = Db.getDevice(dev_id)
+            @device_id = dev_id
+            @params = Db.getParametersForDevice(dev_id)
+        end
+
+        @title = "Администрирование"
+        @subtitle = "Редактирование параметров устройства"
+        @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices']]
+        unless device.nil?
+            @breadcrumbs << [device['name'], 'device_edit/' + device['id']]
+        end
+        @breadcrumbs << [@subtitle, '']
+    end
+
+    def param_write
+        dev_id = nil
+        if params.has_key?('dev_id')
+            dev_id = params['dev_id']
+        end
+        
+        all_params = Db.getAllParameters()
+        to_store = {}
+        for id in all_params.keys
+            new_data_key = 'field_' + id
+            old_data_key = 'orig_' + id
+            if params.has_key?(new_data_key) and params.has_key?(old_data_key)
+                new_data = params[new_data_key].strip
+                old_data = params[old_data_key].strip
+                if new_data != old_data
+                    to_store[id] = new_data
+                end
+            end
+        end
+
+        puts 'to-store: ' + to_store.to_s
+        unless to_store.empty?
+            Db.writeParams(dev_id, session[:userid], to_store)
+        end
+
+        if dev_id.nil?
+            redirect_to :action => 'devices'
+        else
+            redirect_to ('/admin/device_edit/'+dev_id)
+        end
     end
 end
 
