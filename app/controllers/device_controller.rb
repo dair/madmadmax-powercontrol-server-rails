@@ -45,12 +45,30 @@ class DeviceController < ApplicationController
     end
 
     def p
-        puts "========================================================================"
-        puts "params: " + params.to_s
-        puts "========================================================================"
-        #puts "headers: " + request.headers.to_s
-        #puts "request: " + request.raw_post.to_s
-        res = addP(params)
+        res = { "code" => 0 }
+
+        # TODO: return command
+
+        if params.has_key?("id")
+            dev_id = params["id"]
+            if params.has_key?("type")
+                if params["type"] == "ping"
+                    Db.addDeviceMsg(dev_id, 'P', nil, params["t"].to_i)
+                    res["code"] = 1
+                elsif params["type"] == "loc"
+                    res = addP(params)
+                elsif params["type"] == "code"
+                    amount = Db.useFuelCode(params['code'], dev_id)
+                    if amount >= 0
+                        res["code"] = 1
+                        res["id"] = -1
+                        res["fuel_code"] = amount
+                    end
+                end
+            end
+        end
+
+        puts "Returning: " + res.to_s
         render :json => res
     end
 

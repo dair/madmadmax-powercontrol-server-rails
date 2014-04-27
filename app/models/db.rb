@@ -154,6 +154,18 @@ class Db < ActiveRecord::Base
         return ret
     end
 
+    def self.addDeviceMsg(id, type, msg, t)
+        repeat = true
+        while repeat
+            begin
+                connection.insert("insert into device_ping (device_id, dt_device, msg_type, message) values (#{sanitize(id)}, TIMESTAMP WITH TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second', #{sanitize(type)}, #{sanitize(msg)})")
+                repeat = false
+            rescue ActiveRecord::InvalidForeignKey
+                addDevice(id, nil, nil)
+            end
+        end
+    end
+
     def self.addDeviceData(id, lat, lon, spd, t)
         repeat = true
         while repeat
@@ -215,12 +227,22 @@ class Db < ActiveRecord::Base
     end
 
     def self.useFuelCode(code, dev_id)
-        sql = %Q{update fuel_code set dev_id = #{sanitize(dev_id)}, dt = now() where code = #{sanitize(code)} and dev_id is null returning amount}
-        upds = connection.select_all(sql)
-        if upds.rows.empty?
-            return -1
-        else
-            return upds[0]['amount']
+        transaction do
+            sql = %Q{select dev_id, amount from fuel_code where code = #{sanitize(code)}}
+            rows = connection.select_all(sql)
+            if rows.rows.empty?
+                return -1 # no code
+            end
+            unless rows[0]['dev_id'].nil?
+                return 0 #used code
+            end
+            sql = %Q{update fuel_code set dev_id = #{sanitize(dev_id)}, dt = now() where code = #{sanitize(code)} and dev_id is null returning amount}
+            upds = connection.select_all(sql)
+            if upds.rows.empty?
+                return -1
+            else
+                return upds[0]['amount']
+            end
         end
     end
 

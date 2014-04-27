@@ -46,6 +46,7 @@ CREATE TABLE public.point(
     longitude double precision NOT NULL,
     speed double precision NOT NULL
 );
+
 -- ddl-end --
 -- object: dt_idx | type: INDEX --
 CREATE INDEX point_dt_idx ON public.point
@@ -70,6 +71,24 @@ ALTER TABLE public.point ADD CONSTRAINT device_fk FOREIGN KEY (device_id)
 REFERENCES public.device (id) MATCH FULL
 ON DELETE RESTRICT ON UPDATE CASCADE NOT DEFERRABLE;
 -- ddl-end --
+
+CREATE table public.device_ping (
+    device_id varchar(255) NOT NULL,
+    dt timestamp NOT NULL default now(),
+    dt_device timestamp NOT NULL,
+    msg_type char(1) NOT NULL,
+    message varchar(255)
+);
+
+CREATE INDEX device_ping_dt_idx ON public.device_ping
+    USING btree
+    (
+        device_id ASC NULLS LAST,
+        dt ASC NULLS LAST
+    );
+ALTER TABLE public.device_ping ADD CONSTRAINT device_fk FOREIGN KEY (device_id)
+REFERENCES public.device (id) MATCH FULL
+ON DELETE RESTRICT ON UPDATE CASCADE NOT DEFERRABLE;
 
 -- object: public.user | type: TABLE --
 CREATE TABLE public.user(
