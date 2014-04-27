@@ -213,5 +213,37 @@ class Db < ActiveRecord::Base
             return id
         end
     end
+
+    def self.useFuelCode(code, dev_id)
+        sql = %Q{update fuel_code set dev_id = #{sanitize(dev_id)}, dt = now() where code = #{sanitize(code)} and dev_id is null returning amount}
+        upds = connection.select_all(sql)
+        if upds.rows.empty?
+            return -1
+        else
+            return upds[0]['amount']
+        end
+    end
+
+    def self.getAllFuelCodes()
+        sql = %Q{select fuel_code.code, fuel_code.amount, fuel_code.dev_id, fuel_code.dt, device.name from fuel_code left outer join device on fuel_code.dev_id = device.id}
+        ret = connection.select_all(sql)
+        return ret.to_hash
+    end
+
+    def self.addFuelCodes(codes)
+        transaction do
+            for row in codes
+                code = row['code']
+                amount = row['amount']
+                sql = %Q{insert into fuel_code (code, amount) values (#{row['code']}, #{row['amount']})}
+                connection.insert(sql)
+            end
+        end
+    end
+
+    def self.checkCodeExists(code)
+        r = connection.select_all("select code, amount from fuel_code where code = #{sanitize(code.to_s)}")
+        return (not r.rows.empty?)
+    end
 end
 

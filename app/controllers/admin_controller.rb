@@ -6,6 +6,19 @@ class AdminController < ApplicationController
     
     alias :app_checkLogin :checkLogin
 
+    def calcDigit(num, digit)
+        n = num
+        count = 0
+        while n > 0
+            d = n % 10
+            if d == digit
+                count += 1
+            end
+            n = n / 10
+        end
+        return count
+    end
+
     def dummy(r)
         return r
     end
@@ -226,6 +239,11 @@ class AdminController < ApplicationController
     end
 
     def param_edit
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+        
         dev_id = params["dev_id"]
         device = nil
         if dev_id.nil?
@@ -246,6 +264,11 @@ class AdminController < ApplicationController
     end
 
     def param_write
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+        
         dev_id = nil
         if params.has_key?('dev_id')
             dev_id = params['dev_id']
@@ -275,6 +298,50 @@ class AdminController < ApplicationController
         else
             redirect_to ('/admin/device_edit/'+dev_id)
         end
+    end
+
+    def fuelcodes
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+        
+        @codes = Db.getAllFuelCodes()
+    end
+
+    def fuelcodes_add
+        if !checkLogin
+            redirect_to  :controller => 'application', :action => 'index'
+            return
+        end
+        
+        count = id0(params['count'])
+        amount = id0(params['amount'])
+
+        if count == 0
+            addError('И зачем добавлять ничего?')
+        else
+            start_num = 10000000
+            end_num =   99999999
+
+            codes = []
+            i = 0
+            while i < count
+                code = start_num + rand(end_num - start_num)
+                if calcDigit(code, 6) < 3
+                    ex = Db.checkCodeExists(code)
+                    unless ex
+                        line = { 'code' => code.to_s, 'amount' => amount }
+                        codes << line
+                        i += 1
+                    end
+                end
+            end
+
+            Db.addFuelCodes(codes)
+        end
+        
+        redirect_to :action => 'fuelcodes'
     end
 end
 

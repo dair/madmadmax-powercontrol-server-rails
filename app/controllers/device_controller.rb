@@ -54,6 +54,20 @@ class DeviceController < ApplicationController
         render :json => res
     end
 
+    def fuel
+        #entering fuel code
+        res_code = false
+        amount = 0
+        if params.has_key?('dev_id') and params.has_key?('code')
+            amount = Db.useFuelCode(params['code'])
+            if amount >= 0
+                res_code = true
+            end
+        end
+        res = {'code' => res_code, 'amount' => amount}
+        render :json => res
+    end
+
     def auth
         dev_id = params["id"]
         dev_desc = params["desc"]

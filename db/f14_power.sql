@@ -128,5 +128,15 @@ CREATE INDEX command_id_idx ON public.command_data
         id ASC NULLS FIRST
     );
 
+------------------------------ FUEL CODES
+
+CREATE TABLE public.fuel_code (
+    code varchar(20) not null constraint fuel_code_pk primary key,
+    amount integer not null default 0,
+    dev_id varchar(255) default null REFERENCES public.device ON DELETE RESTRICT,
+    dt timestamp default null
+);
+
+
 ALTER DATABASE __DATABASE_NAME__ SET bytea_output TO 'escape';
 

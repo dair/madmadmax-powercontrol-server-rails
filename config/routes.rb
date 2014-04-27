@@ -30,6 +30,8 @@ PowerControlServer::Application.routes.draw do
   get "user/main"
   get "user/map_image"
   get "user/data"
+  get "admin/fuelcodes"
+  post "admin/fuelcodes_add"
 
   post "device/p"
   get "device/auth"

@@ -1,0 +1,22 @@
+<%= form_tag({:action => "fuelcodes_add"}) do %>
+    <table><tbody><tr>
+        <td>Добавить&nbsp;</td><td><%= text_field_tag('count', '20', :maxlength => 5, :size => 5) %></td><td>&nbsp;топливных кодов с количеством топлива в каждом&nbsp;</td><td><%= text_field_tag('amount', '500', :maxlength => 5, :size => 5) %></td><td><%= submit_tag("Добавить") %></td>
+    </tr></tbody></table>
+<% end %>
+
+<% if @codes.empty? %>
+    Кодов пока ещё не заведено. Пора бы.
+<% else %>
+    <table>
+        <tbody>
+            <% for row in @codes %>
+                <tr>
+                    <td><%= row['code'] %></td>
+                    <td><%= row['amount'] %></td>
+                    <td><%= row['name'] %></td>
+                    <td><%= row['dt'] %></td>
+                </tr>
+            <% end %>
+        </tbody>
+    </table>
+<% end %>
