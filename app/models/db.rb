@@ -200,14 +200,22 @@ class Db < ActiveRecord::Base
         return res
     end
 
-    def self.getParametersForDevice(dev_id)
-        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where (command.device_id = #{sanitize(dev_id)} or command.device_id is null) and command.id = command_data.id order by command.id desc")
+    def self.getParametersForDevice(dev_id, id)
+        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where command.id >= #{sanitize(id)} and (command.device_id = #{sanitize(dev_id)} or command.device_id is null) and command.id = command_data.id order by command.id desc")
         res = getAllParameters()
+        max_id = 0
         for row in cmds
+            row_id = row["id"].to_i
+            puts row_id.class.name
+            if row_id > max_id
+                max_id = row_id
+            end
+
             if res.has_key?(row["param_id"]) and not res[row["param_id"]].has_key?("value")
                 res[row["param_id"]]["value"] = row["value"]
             end
         end
+        res["cmd_id"] = max_id
         return res
     end
 

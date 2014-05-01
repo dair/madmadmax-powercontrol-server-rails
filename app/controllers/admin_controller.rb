@@ -149,7 +149,8 @@ class AdminController < ApplicationController
         @device = {}
         @params = {}
         if not dev_id.nil? and not dev_id.empty?
-            @params = Db.getParametersForDevice(dev_id)
+            @params = Db.getParametersForDevice(dev_id, 0)
+            @params.delete("cmd_id")
             dbdata = Db.getDevice(dev_id)
             if not dbdata.nil?
                 @device["id"] = dbdata["id"]
@@ -251,7 +252,8 @@ class AdminController < ApplicationController
         else
             device = Db.getDevice(dev_id)
             @device_id = dev_id
-            @params = Db.getParametersForDevice(dev_id)
+            @params = Db.getParametersForDevice(dev_id, 0)
+            @params.delete("cmd_id")
         end
 
         @title = "Администрирование"

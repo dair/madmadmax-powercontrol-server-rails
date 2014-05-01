@@ -59,11 +59,25 @@ class DeviceController < ApplicationController
                     res = addP(params)
                 elsif params["type"] == "code"
                     amount = Db.useFuelCode(params['code'], dev_id)
-                    if amount >= 0
-                        res["code"] = 1
-                        res["id"] = -1
-                        res["fuel_code"] = amount
+                    res["code"] = 1
+                    res["id"] = -1
+                    res["fuel_code"] = {"amount" => amount, "code" => params['code']}
+                end
+            end
+
+            if params.has_key?("c")
+                cmds = Db.getParametersForDevice(dev_id, params["c"].to_i)
+                cmd_id = cmds["cmd_id"]
+                cmds.delete("cmd_id")
+                c = {}
+                cmds.each do |k,v|
+                    if v.has_key?("value") and not v["value"].nil?
+                        c[k] = v["value"]
                     end
+                end
+                res = c.merge(res)
+                if not c.empty?
+                    res["id"] = cmd_id
                 end
             end
         end
