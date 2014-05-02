@@ -53,7 +53,19 @@ class DeviceController < ApplicationController
             dev_id = params["id"]
             if params.has_key?("type")
                 if params["type"] == "ping"
-                    Db.addDeviceMsg(dev_id, 'P', nil, params["t"].to_i)
+                    t = params["t"].to_i
+                    Db.addDeviceMsg(dev_id, 'P', nil, t)
+
+                    p = params["device"].clone
+                    p.delete("type")
+                    p.delete("c")
+                    p.delete("t")
+                    p.delete("id")
+                    
+                    unless p.empty?
+                        Db.addDeviceStat(dev_id, t, p)
+                    end
+
                     res["code"] = 1
                 elsif params["type"] == "loc"
                     res = addP(params)

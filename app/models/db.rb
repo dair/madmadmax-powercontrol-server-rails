@@ -158,7 +158,7 @@ class Db < ActiveRecord::Base
         repeat = true
         while repeat
             begin
-                connection.insert("insert into device_ping (device_id, dt_device, msg_type, message) values (#{sanitize(id)}, TIMESTAMP WITH TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second', #{sanitize(type)}, #{sanitize(msg)})")
+                connection.insert("insert into device_ping (device_id, dt_device, msg_type, message) values (#{sanitize(id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second', #{sanitize(type)}, #{sanitize(msg)})")
                 repeat = false
             rescue ActiveRecord::InvalidForeignKey
                 addDevice(id, nil, nil)
@@ -170,7 +170,7 @@ class Db < ActiveRecord::Base
         repeat = true
         while repeat
             begin
-                connection.insert("insert into point (device_id, latitude, longitude, speed, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(spd)}, TIMESTAMP WITH TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
+                connection.insert("insert into point (device_id, latitude, longitude, speed, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(spd)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
                 repeat = false
             rescue ActiveRecord::InvalidForeignKey
                 addDevice(id, nil, nil)
@@ -274,6 +274,15 @@ class Db < ActiveRecord::Base
     def self.checkCodeExists(code)
         r = connection.select_all("select code, amount from fuel_code where code = #{sanitize(code.to_s)}")
         return (not r.rows.empty?)
+    end
+
+    def self.addDeviceStat(dev_id, t, stat)
+        transaction do
+            stat.each do |k,v|
+                sql = "insert into device_stat (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize(k)}, #{sanitize(v)})"
+                connection.insert(sql)
+            end
+        end
     end
 end
 

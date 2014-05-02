@@ -157,5 +157,14 @@ CREATE TABLE public.fuel_code (
 );
 
 
+CREATE TABLE public.device_stat (
+    dev_id varchar(255) not null REFERENCES public.device ON DELETE CASCADE,
+    dt timestamp not null,
+    key varchar(20) not null,
+    value varchar(255) not null,
+    
+    CONSTRAINT device_stat__pk PRIMARY KEY (dev_id, dt, key)
+);
+
 ALTER DATABASE __DATABASE_NAME__ SET bytea_output TO 'escape';
 
