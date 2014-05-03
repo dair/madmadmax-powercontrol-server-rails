@@ -47,20 +47,26 @@ class DeviceController < ApplicationController
     def p
         res = { "code" => 0 }
 
-        # TODO: return command
-
         if params.has_key?("id")
             dev_id = params["id"]
             if params.has_key?("type")
                 if params["type"] == "ping"
                     t = params["t"].to_i
-                    Db.addDeviceMsg(dev_id, 'P', nil, t)
+                    
+                    desc = nil
+                    if params.has_key?("desc")
+                        desc = params["has_key"]
+                    end
+
+                    Db.addDeviceMsg(dev_id, desc, 'P', nil, t)
 
                     p = params["device"].clone
                     p.delete("type")
                     p.delete("c")
                     p.delete("t")
                     p.delete("id")
+
+                    p["ip"] = request.remote_ip
                     
                     unless p.empty?
                         Db.addDeviceStat(dev_id, t, p)

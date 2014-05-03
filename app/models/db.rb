@@ -131,7 +131,7 @@ class Db < ActiveRecord::Base
     def self.points(ids, time)
         clauses = []
         if not ids.nil? and ids.length > 0
-            clauses.push('device_id in (' + ids.join(', ') + ')')
+            clauses.push('device_id in (' + ids.map{|i| "'"+i+"'"}.join(', ') + ')')
         end
         if time > 0
             clauses.push('dt > to_timestamp(' + time.to_s + ')')
@@ -149,19 +149,19 @@ class Db < ActiveRecord::Base
             if ret[dev_id].nil?
                 ret[dev_id] = {}
             end
-            ret[dev_id][Float(row['dt'])] = {:y => Float(row['latitude']), :x => Float(row['longitude'])}
+            ret[dev_id][Float(row['dt'])] = {"lat" => Float(row['latitude']), "lon" => Float(row['longitude'])}
         end
         return ret
     end
 
-    def self.addDeviceMsg(id, type, msg, t)
+    def self.addDeviceMsg(id, desc, type, msg, t)
         repeat = true
         while repeat
             begin
                 connection.insert("insert into device_ping (device_id, dt_device, msg_type, message) values (#{sanitize(id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second', #{sanitize(type)}, #{sanitize(msg)})")
                 repeat = false
             rescue ActiveRecord::InvalidForeignKey
-                addDevice(id, nil, nil)
+                addDevice(id, desc)
             end
         end
     end
@@ -173,7 +173,7 @@ class Db < ActiveRecord::Base
                 connection.insert("insert into point (device_id, latitude, longitude, speed, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(spd)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
                 repeat = false
             rescue ActiveRecord::InvalidForeignKey
-                addDevice(id, nil, nil)
+                addDevice(id, nil)
             end
         end
         return true

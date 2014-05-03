@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<script src="http://api-maps.yandex.ru/2.0/?load=package.full&amp;amp;amp;lang=ru-RU"
+        type="text/javascript">
+</script>
+
+
+<script type="text/javascript">
+    ymaps.ready(init);
+    function init ()
+    {
+        var myMap = new ymaps.Map("map",
+        {
+            center: [<%= (@map["minlat"] + @map["maxlat"]) / 2  %>, <%= (@map["minlon"] + @map["maxlon"]) / 2  %>],
+            zoom: 13
+        });
+
+        var myGeoObject = new ymaps.GeoObject({
+            geometry: {
+                type: "LineString",
+                coordinates: [
+<%= @map["points"].values.map{|v| "[" + v["lat"].to_s + ", " + v["lon"].to_s + "]"}.join(", ") %>
+                ]
+            },
+            properties:{
+                hintContent: "<%= @map["name"] %>"
+            }
+        }, {
+            draggable: false,
+            strokeColor: "#FF0000",
+            strokeWidth: 5
+        });
+
+        myMap.geoObjects.add(myGeoObject);
+    }
+
+
+</script>
+ 
+ <h1>Вывод gpx трека на карту Яндекса</h1>
+ <div id="map" style="width: 800px; height: 600px"></div>
+
+

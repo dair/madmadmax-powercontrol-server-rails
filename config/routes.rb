@@ -32,6 +32,8 @@ PowerControlServer::Application.routes.draw do
   get "user/data"
   get "admin/fuelcodes"
   post "admin/fuelcodes_add"
+  get "admin/gpx"
+  get "admin/yandex"
 
   post "device/p"
   get "device/auth"
