@@ -55,6 +55,11 @@ class DeviceController < ApplicationController
                 type = params["type"]
                 if type == "marker"
                     res["code"] = 1
+                    t = params["t"].to_i
+                    marker = params["m"]
+                    unless marker.nil?
+                        Db.addDeviceStat(dev_id, t, {('mark_' + marker) => ''})
+                    end
                 elsif type == "ping"
                     t = params["t"].to_i
                     
