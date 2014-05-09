@@ -49,7 +49,8 @@ class Db < ActiveRecord::Base
     end
 
     def self.getAllKnownDevices()
-        rows = connection.select_all(%Q{select id, name, type from device where name is not null order by name asc})
+        sql = "select device.id, device.name, device.type, di1.dt as ping_dt, di2.dt as point_dt from device left outer join device_info di1 on device.id=di1.dev_id and di1.key='last_ping' left outer join device_info di2 on device.id=di2.dev_id and di2.key='last_point'"
+        rows = connection.select_all(sql)
         return rows
     end
 
@@ -166,11 +167,11 @@ class Db < ActiveRecord::Base
         end
     end
 
-    def self.addDeviceData(id, lat, lon, spd, t)
+    def self.addDeviceData(id, lat, lon, spd, distance, t)
         repeat = true
         while repeat
             begin
-                connection.insert("insert into point (device_id, latitude, longitude, speed, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(spd)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
+                connection.insert("insert into point (device_id, latitude, longitude, speed, distance, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(spd)}, #{sanitize(distance)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
                 repeat = false
             rescue ActiveRecord::InvalidForeignKey
                 addDevice(id, nil)
@@ -206,7 +207,7 @@ class Db < ActiveRecord::Base
         max_id = 0
         for row in cmds
             row_id = row["id"].to_i
-            puts row_id.class.name
+            #puts row_id.class.name
             if row_id > max_id
                 max_id = row_id
             end
@@ -281,6 +282,23 @@ class Db < ActiveRecord::Base
             stat.each do |k,v|
                 sql = "insert into device_stat (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize(k)}, #{sanitize(v)})"
                 connection.insert(sql)
+                sql = "insert into device_info (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize('stat_' + k)}, #{sanitize(v)})"
+                connection.execute(sql)
+            end
+        end
+    end
+
+    def self.getLatestDeviceStat(dev_id)
+        sql = "select dt, key, value from device_stat where (dev_id, dt, key) in (select dev_id, max(dt) as dt, key from device_stat where dev_id = #{sanitize(dev_id)} group by key, dev_id)"
+        rows = connection.select_all(sql)
+        return rows.to_ary
+    end
+
+    def self.setDeviceInfo(dev_id, values)
+        transaction do
+            for row in values
+                sql = "insert into device_info (dev_id, key, value, dt) values (#{sanitize(dev_id)}, #{sanitize(row["key"])}, #{sanitize(row["value"])}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(row["dt"])} * INTERVAL '1 second'))"
+                connection.execute(sql)
             end
         end
     end

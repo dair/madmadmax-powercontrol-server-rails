@@ -79,3 +79,16 @@
         </tbody>
     </table>
 <% end %>
+
+Статистика:
+<table border=1>
+    <tbody>
+        <% for s in @stat %>
+            <tr>
+                <td><%= s["key"] %></td>
+                <td><%= s["value"] %></td>
+                <td><%= Time.parse(s["dt"] + ' GMT') %></td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>

@@ -148,6 +148,7 @@ class AdminController < ApplicationController
 
         @device = {}
         @params = {}
+        @stat = []
         if not dev_id.nil? and not dev_id.empty?
             @params = Db.getParametersForDevice(dev_id, 0)
             @params.delete("cmd_id")
@@ -157,7 +158,10 @@ class AdminController < ApplicationController
                 @device["name"] = dbdata["name"]
                 @device["type"] = dbdata["type"]
             end
+
+            @stat = Db.getLatestDeviceStat(dev_id)
         end
+
         @title = "Администрирование"
         if dev_id != 0
             @subtitle = "Редактирование устройства"
@@ -309,6 +313,11 @@ class AdminController < ApplicationController
         end
         
         @codes = Db.getAllFuelCodes()
+        
+        @title = "Администрирование"
+        @subtitle = "Коды канистр топлива"
+        @breadcrumbs = [["Главная", 'main'] ]
+        @breadcrumbs << [@subtitle, '']
     end
 
     def fuelcodes_add
@@ -388,8 +397,16 @@ class AdminController < ApplicationController
             @map["maxlon"] = max_lon
             @map["points"] = points
             puts @map
+        
+            @title = "Администрирование"
+            device = Db.getDevice(dev_id)
+            @subtitle = "Карта приключений: \"" + device['name'] + "\""
+            @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices']]
+            #@breadcrumbs << [device['name'], 'device_edit/' + device['id']]
+            @breadcrumbs << [@subtitle, '']
         else
-            render nothing: true
+            redirect_to :action => 'devices'
+            return
         end
     end
 

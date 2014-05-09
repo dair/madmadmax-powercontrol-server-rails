@@ -20,9 +20,6 @@ class HeaderDelete
 #Connection: Keep-Alive
 #Set-Cookie: request_method=POST; path=/
 
-        puts '=========================================================================='
-        puts env['REQUEST_PATH']
-        puts '=========================================================================='
         if env['REQUEST_PATH'] == '/device/p'
             r[1].delete "X-Runtime"
             r[1].delete "X-Frame-Options"

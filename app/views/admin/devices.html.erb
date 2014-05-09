@@ -2,6 +2,10 @@
 def device_edit_path(id)
     return "device_edit/" + id
 end
+
+def map_path(id)
+    return "gpx?dev_id="+id
+end
 %>
 
 <%= render partial: "parameters", dev_id: nil %>
@@ -32,6 +36,9 @@ end
                 <div class="devices_table_cell"><%= link_to u['id'], device_edit_path(u['id']) %></div>
                 <div class="devices_table_cell"><%= link_to u['name'], device_edit_path(u['id']) %></div>
                 <div class="devices_table_cell"><%= u['type'] == 'A'? "Броня": "Транспорт" %></div>
+                <div class="devices_table_cell">ping:&nbsp;<%= Time.parse(u['ping_dt'] + ' GMT') %></div>
+                <div class="devices_table_cell">gps: <%= u['point_dt'].nil? ? "Нет": Time.parse(u['point_dt'] + ' GMT') %></div>
+                <div class="devices_table_cell"><%= u['point_dt'].nil? ? "": (link_to 'карта', map_path(u['id'])) %></div>
             </div>
         <% end %>
     <% end %>

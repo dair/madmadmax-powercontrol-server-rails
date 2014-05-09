@@ -118,4 +118,8 @@ class ApplicationController < ActionController::Base
         send_data mapImage[:map], :type => mapImage[:content_type], :disposition => 'inline'
     end
 
+    def parseTime(t)
+        Time.parse(t.to_s + ' GMT')
+    end
+
 end
