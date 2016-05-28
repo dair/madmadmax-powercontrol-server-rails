@@ -3,16 +3,16 @@
 set -x
 set -e
 
-USER=f14_power
-DB=f14_power
-PWD=f14_power_gfhjkm
+USER=mm_power
+DB=mm_power
+PWD=mm_power_gfhjkm
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-FILE="$DIR/f14_power.sql"
+FILE="$DIR/mm_power.sql"
 
 
 export PGPASSWORD="${PWD}"
-dropdb -h localhost -U "${USER}" "${DB}"
+dropdb -h localhost -U "${USER}" "${DB}" || true
 
 createdb -h localhost -U "${USER}" -E UTF-8 "${DB}"
 
