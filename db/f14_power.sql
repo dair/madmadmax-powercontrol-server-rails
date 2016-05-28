@@ -181,7 +181,7 @@ CREATE INDEX device_stat__dev_id__idx on device_stat using btree (dev_id asc);
 
 CREATE TABLE device_info (
     dev_id varchar(255) not null REFERENCES public.device ON DELETE CASCADE,
-    key varchar(20) not null,
+    key varchar(255) not null,
     value varchar(255) not null,
     dt timestamp not null default now(),
 
