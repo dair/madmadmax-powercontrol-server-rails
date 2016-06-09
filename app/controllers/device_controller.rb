@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class DeviceController < ApplicationController
-    skip_before_filter :verify_authenticity_token, :only => [:p]
+    skip_before_filter :verify_authenticity_token, :only => [:p, :reg]
 
     def f0(l)
         ret = 0.0
@@ -152,4 +152,34 @@ class DeviceController < ApplicationController
 
         render :json => ret
     end
+
+    def reg
+        dev_hw_id = params["hw_id"]
+        dev_desc = params["desc"]
+        dev_name = params["name"]
+
+        puts '-------------'
+
+        code = false
+
+        foundDevice = Db.getDeviceByHwId(dev_hw_id)
+        if foundDevice.nil?
+            id = ApplicationHelper.encodeHardwareId(dev_hw_id)
+            unless id.empty?
+                Db.addDevice(id, dev_hw_id, dev_name, dev_desc)
+                code = true
+            end
+        else
+            id = foundDevice["id"]
+            Db.editDevice(id, dev_name, dev_desc)
+            code = true
+        end
+
+        ret = {}
+        ret["code"] = code
+        ret["id"] = id
+
+        render :json => ret
+    end
 end
+

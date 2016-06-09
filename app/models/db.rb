@@ -68,20 +68,23 @@ class Db < ActiveRecord::Base
         return ret
     end
 
-    def self.addDevice(id, desc)
+    def self.getDeviceByHwId(hw_id)
+        rows = connection.select_all(%Q{select id, name, description from device where hw_id = #{sanitize(hw_id)}})
+        ret = nil
+        if rows.to_ary.size == 1
+            ret = rows[0]
+        end
+        return ret
+    end
+
+    def self.addDevice(id, hw_id, name, desc)
         transaction do
-            rows = connection.select_all(%Q{select id, name from device where id = #{sanitize(id)}})
-            
-            if rows.to_ary.size > 0
-                connection.update(%Q{update device set description = #{sanitize(desc)} where id = #{sanitize(id)}})
-            else
-                connection.insert(%Q{insert into device (id, description) values (#{sanitize(id)}, #{sanitize(desc)})})
-            end
+            connection.insert(%Q{insert into device (id, hw_id, name, description) values (#{sanitize(id)},#{sanitize(hw_id)}, #{sanitize(name)}, #{sanitize(desc)})})
         end
     end
 
-    def self.editDevice(id, name, type)
-        connection.update(%Q{update device set name = #{name.nil? ? "NULL": sanitize(name)}, type = #{type.nil? ? "NULL" : sanitize(type)} where id = #{sanitize(id)}})
+    def self.editDevice(id, name, desc)
+        connection.update(%Q{update device set name = #{name.nil? ? "NULL": sanitize(name)}, description = #{desc.nil? ? "NULL" : sanitize(desc)} where id = #{sanitize(id)}})
     end
 
     def self.mapImage()
