@@ -9,9 +9,9 @@ SET check_function_bodies = false;
 -- object: public.device | type: TABLE --
 CREATE TABLE public.device(
     id varchar(255) NOT NULL,
-    name varchar(255) DEFAULT NULL,
+    hw_id varchar(255) NOT NULL,
+    name varchar(255) NOT NULL,
     description varchar(255) DEFAULT NULL,
-    type char DEFAULT NULL,
     CONSTRAINT device_pk_id PRIMARY KEY (id)
 );
 -- ddl-end --
@@ -22,16 +22,16 @@ CREATE INDEX dev_id_idx ON public.device
       id ASC NULLS LAST
     );
 
+CREATE INDEX dev_hw_id_idx ON public.device
+    USING btree
+    (
+      hw_id ASC NULLS LAST
+    );
+
 CREATE INDEX name_idx ON public.device
     USING btree
     (
       name ASC NULLS LAST
-    );
-
-CREATE INDEX devtype_idx ON public.device
-    USING btree
-    (
-        type ASC NULLS FIRST
     );
 
 -- ddl-end --

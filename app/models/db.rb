@@ -49,7 +49,7 @@ class Db < ActiveRecord::Base
     end
 
     def self.getAllKnownDevices()
-        sql = "select device.id, device.name, device.type, di1.dt as ping_dt, di2.dt as point_dt from device left outer join device_info di1 on device.name is not null and device.id=di1.dev_id and di1.key='last_ping' left outer join device_info di2 on device.name is not null and device.id=di2.dev_id and di2.key='last_point'"
+        sql = "select device.id, device.hw_id, device.name, di1.dt as ping_dt, di2.dt as point_dt from device left outer join device_info di1 on device.name is not null and device.id=di1.dev_id and di1.key='last_ping' left outer join device_info di2 on device.name is not null and device.id=di2.dev_id and di2.key='last_point'"
         rows = connection.select_all(sql)
         return rows
     end
