@@ -46,6 +46,21 @@ class DeviceController < ApplicationController
         return res
     end
 
+    def paramsForDevice(dev_id, param_id)
+        params = Db.getParametersForDevice(dev_id, param_id)
+
+        ret = {}
+        for p in params.keys
+            if p == "cmd_id"
+                ret[p] = params[p]
+            else
+                ret[p] = params[p]["value"]
+            end
+        end
+
+        return ret
+    end
+
     def p
         res = { "code" => 0 }
 
@@ -83,13 +98,15 @@ class DeviceController < ApplicationController
                     end
 
                     res["code"] = 1
-                elsif type == "loc"
+                elsif type == "location"
                     res = addP(params)
                 elsif type == "code"
                     amount = Db.useFuelCode(params['code'], dev_id)
                     res["code"] = 1
                     res["id"] = -1
                     res["fuel_code"] = {"amount" => amount, "code" => params['code']}
+                elsif type == "info"
+                    res["code"] = 1
                 end
             end
 
@@ -128,31 +145,6 @@ class DeviceController < ApplicationController
         render :json => res
     end
 
-    def auth
-        dev_id = params["id"]
-        dev_desc = params["desc"]
-        ret = {}
-        ret["code"] = false
-        unless dev_id.nil?
-            dev = Db.getDevice(dev_id)
-            if dev.nil?
-                Db.addDevice(dev_id, dev_desc)
-                ret["code"] = false
-            else
-                if dev["type"].nil?
-                    ret["code"] = false
-                else
-                    ret["code"] = true
-                    ret["a"] = form_authenticity_token
-                end
-            end
-        end
-
-        #puts ret
-
-        render :json => ret
-    end
-
     def reg
         dev_hw_id = params["hw_id"]
         dev_desc = params["desc"]
@@ -178,6 +170,11 @@ class DeviceController < ApplicationController
         ret = {}
         ret["code"] = code
         ret["id"] = id
+
+        params = paramsForDevice(id, 0)
+        ret["params"] = params
+
+        puts ret
 
         render :json => ret
     end
