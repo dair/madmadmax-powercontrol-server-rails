@@ -60,7 +60,7 @@ class Db < ActiveRecord::Base
     end
 
     def self.getDevice(id)
-        rows = connection.select_all(%Q{select id, name, type from device where id = #{sanitize(id)}})
+        rows = connection.select_all(%Q{select id, hw_id, name, description from device where id = #{sanitize(id)}})
         ret = nil
         if rows.to_ary.size == 1
             ret = rows[0]
@@ -83,8 +83,8 @@ class Db < ActiveRecord::Base
         end
     end
 
-    def self.editDevice(id, name, desc)
-        connection.update(%Q{update device set name = #{name.nil? ? "NULL": sanitize(name)}, description = #{desc.nil? ? "NULL" : sanitize(desc)} where id = #{sanitize(id)}})
+    def self.editDevice(id, name)
+        connection.update(%Q{update device set name = #{name.nil? ? "NULL": sanitize(name)} where id = #{sanitize(id)}})
     end
 
     def self.mapImage()
@@ -205,9 +205,9 @@ class Db < ActiveRecord::Base
     end
 
     def self.getParametersForDevice(dev_id, id)
-        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where command.id >= #{sanitize(id)} and (command.device_id = #{sanitize(dev_id)} or command.device_id is null) and command.id = command_data.id order by command.id desc")
+        cmds = connection.select_all("select command.id as id, command_data.param_id as param_id, command_data.value as value from command, command_data where command.id > #{sanitize(id)} and (command.device_id = #{sanitize(dev_id)} or command.device_id is null) and command.id = command_data.id order by command.id desc")
         res = getAllParameters()
-        max_id = 0
+        max_id = id
         for row in cmds
             row_id = row["id"].to_i
             #puts row_id.class.name
@@ -219,7 +219,10 @@ class Db < ActiveRecord::Base
                 res[row["param_id"]]["value"] = row["value"]
             end
         end
-        res["cmd_id"] = max_id
+        res["last_command_id"] = max_id
+
+        #puts res
+
         return res
     end
 

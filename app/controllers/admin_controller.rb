@@ -151,13 +151,15 @@ class AdminController < ApplicationController
         @stat = []
         if not dev_id.nil? and not dev_id.empty?
             @params = Db.getParametersForDevice(dev_id, 0)
-            @params.delete("cmd_id")
-            dbdata = Db.getDevice(dev_id)
-            if not dbdata.nil?
-                @device["id"] = dbdata["id"]
-                @device["name"] = dbdata["name"]
-                @device["type"] = dbdata["type"]
-            end
+            @params.delete("last_command_id")
+            @device = Db.getDevice(dev_id)
+#            dbdata = Db.getDevice(dev_id)
+#            if not dbdata.nil?
+#                @device["id"] = dbdata["id"]
+#                @device["hw_id"] = dbdata["hw_id"]
+#                @device["name"] = dbdata["name"]
+#                @device["description"] = dbdata["description"]
+#            end
 
             @stat = Db.getLatestDeviceStat(dev_id)
         end
@@ -179,9 +181,8 @@ class AdminController < ApplicationController
 
         id = params["id"]
         name = params["name"]
-        type = params["type"]
 
-        Db.editDevice(id, name, type)
+        Db.editDevice(id, name)
     
         redirect_to :action => 'devices'
     end

@@ -25,7 +25,7 @@ class DeviceController < ApplicationController
         end
         id = params['id']
         
-        dt = id0(params["t"])
+        dt = id0(params["time"]) / 1000.0
         if dt == 0
             dt = Time.now.to_i
         end
@@ -41,22 +41,25 @@ class DeviceController < ApplicationController
             res['code'] = 0
         end
 
-        res['id'] = 2
-        res['timeout'] = 42;
         return res
     end
 
     def paramsForDevice(dev_id, param_id)
+        puts 'paramsForDevice: ' + param_id.to_s
         params = Db.getParametersForDevice(dev_id, param_id)
 
         ret = {}
         for p in params.keys
-            if p == "cmd_id"
+            if p == "last_command_id"
                 ret[p] = params[p]
             else
-                ret[p] = params[p]["value"]
+                unless params[p]["value"].nil?
+                    ret[p] = params[p]["value"]
+                end
             end
         end
+
+        puts ret
 
         return ret
     end
@@ -70,13 +73,14 @@ class DeviceController < ApplicationController
                 type = params["type"]
                 if type == "marker"
                     res["code"] = 1
-                    t = params["t"].to_i
-                    marker = params["m"]
+                    t = params["time"].to_i / 1000.0
+                    marker = params["tag"]
                     unless marker.nil?
                         Db.addDeviceStat(dev_id, t, {('mark_' + marker) => ''})
+                        Db.setDeviceInfo(dev_id, [{'key' => 'last_ping', 'value' => '', 'dt' => t}])
                     end
                 elsif type == "ping"
-                    t = params["t"].to_i
+                    t = params["time"].to_i / 1000.0
                     
                     desc = nil
                     if params.has_key?("desc")
@@ -111,19 +115,11 @@ class DeviceController < ApplicationController
             end
 
             if params.has_key?("c")
-                cmds = Db.getParametersForDevice(dev_id, params["c"].to_i)
-                cmd_id = cmds["cmd_id"]
-                cmds.delete("cmd_id")
-                c = {}
-                cmds.each do |k,v|
-                    if v.has_key?("value") and not v["value"].nil?
-                        c[k] = v["value"]
-                    end
-                end
-                res = c.merge(res)
-                if not c.empty?
-                    res["id"] = cmd_id
-                end
+                puts '----------------------------'
+                puts params
+                puts '----------------------------'
+                cmds = paramsForDevice(dev_id, params["c"].to_i)
+                res["params"] = cmds
             end
         end
 

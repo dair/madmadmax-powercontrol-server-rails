@@ -1,7 +1,6 @@
 <script>
     function formSubmit()
     {
-        var a_checked = $('input:radio[name="type"]:checked').val();
         var errors = [];
 
         var v_name = $('input:text[name="name"]').val();
@@ -16,11 +15,6 @@
             errors.push('Название пустым быть не может');
         }
         
-        if (null == a_checked)
-        {
-            errors.push("Надо бы какой-нибудь тип указать");
-        }
-
         if (errors.length > 0)
         {
             var errStr;
@@ -54,21 +48,16 @@
                 <td><%= label_tag("label_id", @device["id"], :size => "100%", :maxlength => 10) %></td>
             </tr>
             <tr>
+                <td align="right">Hardware ID</td>
+                <td><%= label_tag("label_hwid", @device["hw_id"], :size => "100%", :maxlength => 10) %></td>
+            </tr>
+            <tr>
                 <td align="right">Название</td>
                 <td><%= text_field_tag("name", @device["name"], :size => "100%", :maxlength => 255) %></td>
             </tr>
             <tr>
-                <td align="right">Тип</td>
-                <td>
-                    <table>
-                        <tr>
-                            <td><%= radio_button_tag 'type', 'A', (@device["type"] == 'A')  %><%= label_tag 'type_armor', 'Броня', {:for => "type_A"} %></td>
-                        </tr>
-                        <tr>
-                            <td><%= radio_button_tag 'type', 'V', (@device["type"] == 'V') %><%= label_tag 'type_vehicle', 'Транспорт', {:for => "type_V"} %></td>
-                        </tr>
-                    </table>
-                </td>
+                <td align="right">Описание</td>
+                <td><%= label_tag("label_desc", @device["description"], :size => "100%", :maxlength => 10) %></td>
             </tr>
             <tr>
                 <td></td>
