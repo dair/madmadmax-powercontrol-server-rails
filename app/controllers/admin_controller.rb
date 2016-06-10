@@ -258,7 +258,7 @@ class AdminController < ApplicationController
             device = Db.getDevice(dev_id)
             @device_id = dev_id
             @params = Db.getParametersForDevice(dev_id, 0)
-            @params.delete("cmd_id")
+            @params.delete("last_command_id")
         end
 
         @title = "Администрирование"
