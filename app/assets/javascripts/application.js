@@ -14,3 +14,14 @@
 //= require jquery_ujs
 //= require turbolinks
 //= require_tree .
+
+function showTime(epoch)
+{
+    if (isNaN(epoch))
+    {
+        return epoch;
+    }
+    var d = new Date(0);
+    d.setUTCSeconds(epoch);
+    return d;
+}

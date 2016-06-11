@@ -49,7 +49,7 @@ class Db < ActiveRecord::Base
     end
 
     def self.getAllKnownDevices()
-        sql = "select device.id, device.hw_id, device.name, di1.dt as ping_dt, di2.dt as point_dt from device left outer join device_info di1 on device.name is not null and device.id=di1.dev_id and di1.key='last_ping' left outer join device_info di2 on device.name is not null and device.id=di2.dev_id and di2.key='last_point'"
+        sql = "select device.id, device.hw_id, device.name, extract(epoch from di1.dt) as ping_dt, extract(epoch from di2.dt) as point_dt from device left outer join device_info di1 on device.name is not null and device.id=di1.dev_id and di1.key='last_ping' left outer join device_info di2 on device.name is not null and device.id=di2.dev_id and di2.key='last_point'"
         rows = connection.select_all(sql)
         return rows
     end
@@ -267,7 +267,7 @@ class Db < ActiveRecord::Base
     end
 
     def self.getAllFuelCodes()
-        sql = %Q{select fuel_code.code, fuel_code.amount, fuel_code.dev_id, fuel_code.dt, device.name from fuel_code left outer join device on fuel_code.dev_id = device.id}
+        sql = %Q{select fuel_code.code, fuel_code.amount, fuel_code.dev_id, extract(epoch from fuel_code.dt), device.name from fuel_code left outer join device on fuel_code.dev_id = device.id}
         ret = connection.select_all(sql)
         return ret.to_hash
     end
@@ -323,7 +323,7 @@ class Db < ActiveRecord::Base
     end
 
     def self.getLatestDeviceStat(dev_id)
-        sql = "select dt, key, value from device_stat where (dev_id, dt, key) in (select dev_id, max(dt) as dt, key from device_stat where dev_id = #{sanitize(dev_id)} group by key, dev_id)"
+        sql = "select extract(epoch from dt) as dt, key, value from device_stat where (dev_id, dt, key) in (select dev_id, max(dt) as dt, key from device_stat where dev_id = #{sanitize(dev_id)} group by key, dev_id)"
         rows = connection.select_all(sql)
         return rows.to_ary
     end

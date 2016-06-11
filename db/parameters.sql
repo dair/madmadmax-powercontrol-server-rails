@@ -17,8 +17,11 @@ values
     ('fuel_per_km', 'Расход топлива на километр, в абстрактных единицах'),
     ('reliability', 'Надёжность — кол-во потери хитов на километр пробега'),
     ('hit_points', 'Хиты'),
+    ('max_hit_points', 'Максимальные хиты'),
     ('red_zone', '"Красная зона", в км/ч'),
-    ('damage_resistance', 'Броня, сопротивляемость поражениям, в хитах');
+    ('damage_resistance', 'Броня, сопротивляемость поражениям, в хитах'),
+    ('good_p1_formula', 'Формула для вычисления вероятности поломки первого типа'),
+    ('good_p2_formula', 'Формула для вычисления вероятности поломки второго типа');
 
 insert into command (id, device_id, user_name) values (1, NULL, 'admin');
 insert into command_data (id, param_id, value) values
@@ -38,5 +41,8 @@ insert into command_data (id, param_id, value) values
     (1, 'fuel_per_km', '20')
     (1, 'reliability', '1'),
     (1, 'hit_points', '100'),
+    (1, 'max_hit_points', '100'),
     (1, 'red_zone', '25'),
-    (1, 'damage_resistance', '0');
+    (1, 'damage_resistance', '0'),
+    (1, 'good_p1_formula', '100-(61887.9*x)^0.3'),
+    (1, 'good_p2_formula', '100-(92831.8*x)^0.3');
