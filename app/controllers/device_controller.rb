@@ -33,7 +33,7 @@ class DeviceController < ApplicationController
         lat = f0(params["lat"])
         lon = f0(params["lon"])
         spd = f0(params["spd"])
-        distance = f0(params["l"])
+        distance = f0(params["distance"])
         acc = f0(params["acc"])
 
         code = Db.addDeviceData(id, lat, lon, acc, spd, distance, dt)

@@ -20,8 +20,8 @@ values
     ('max_hit_points', 'Максимальные хиты'),
     ('red_zone', '"Красная зона", в км/ч'),
     ('damage_resistance', 'Броня, сопротивляемость поражениям, в хитах'),
-    ('good_p1_formula', 'Формула для вычисления вероятности поломки первого типа'),
-    ('good_p2_formula', 'Формула для вычисления вероятности поломки второго типа');
+    ('p1_formula', 'Формула для вычисления вероятности поломки первого типа'),
+    ('p2_formula', 'Формула для вычисления вероятности поломки второго типа');
 
 insert into command (id, device_id, user_name) values (1, NULL, 'admin');
 insert into command_data (id, param_id, value) values
@@ -44,5 +44,5 @@ insert into command_data (id, param_id, value) values
     (1, 'max_hit_points', '100'),
     (1, 'red_zone', '25'),
     (1, 'damage_resistance', '0'),
-    (1, 'good_p1_formula', '100-(61887.9*x)^0.3'),
-    (1, 'good_p2_formula', '100-(92831.8*x)^0.3');
+    (1, 'p1_formula', '1-(4*x/3)^0.3'),
+    (1, 'p2_formula', '1-(2*x)^0.3');
