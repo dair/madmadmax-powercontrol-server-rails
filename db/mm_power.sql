@@ -44,6 +44,7 @@ CREATE TABLE public.point(
     dt_recv timestamp NOT NULL DEFAULT now(),
     latitude double precision NOT NULL,
     longitude double precision NOT NULL,
+    accuracy double precision NOT NULL,
     speed double precision NOT NULL,
     distance double precision NOT NULL
 );

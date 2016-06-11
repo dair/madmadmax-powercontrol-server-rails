@@ -170,11 +170,11 @@ class Db < ActiveRecord::Base
         end
     end
 
-    def self.addDeviceData(id, lat, lon, spd, distance, t)
+    def self.addDeviceData(id, lat, lon, acc, spd, distance, t)
         repeat = true
         while repeat
             begin
-                connection.insert("insert into point (device_id, latitude, longitude, speed, distance, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(spd)}, #{sanitize(distance)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
+                connection.insert("insert into point (device_id, latitude, longitude, accuracy, speed, distance, dt) values (#{sanitize(id)}, #{sanitize(lat)}, #{sanitize(lon)}, #{sanitize(acc)}, #{sanitize(spd)}, #{sanitize(distance)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second' )")
                 repeat = false
             rescue ActiveRecord::InvalidForeignKey
                 addDevice(id, nil)
@@ -184,7 +184,7 @@ class Db < ActiveRecord::Base
     end
 
     def self.getAllParameters()
-        all_params = connection.select_all("select id, name from parameter")
+        all_params = connection.select_all("select id, name from parameter order by id asc")
         res = {}
         for row in all_params
             res[row["id"]] = {"name" => row["name"]}

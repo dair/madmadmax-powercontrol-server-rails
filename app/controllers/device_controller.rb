@@ -34,8 +34,9 @@ class DeviceController < ApplicationController
         lon = f0(params["lon"])
         spd = f0(params["spd"])
         distance = f0(params["l"])
+        acc = f0(params["acc"])
 
-        code = Db.addDeviceData(id, lat, lon, spd, distance, dt)
+        code = Db.addDeviceData(id, lat, lon, acc, spd, distance, dt)
         Db.setDeviceInfo(id, [{'key' => 'last_point', 'value' => (lat.to_s + ',' + lon.to_s), 'dt' => dt}])
         if not code
             res['code'] = 0
