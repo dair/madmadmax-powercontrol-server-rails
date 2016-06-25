@@ -147,8 +147,6 @@ class DeviceController < ApplicationController
         dev_desc = params["desc"]
         dev_name = params["name"]
 
-        puts '-------------'
-
         code = false
 
         foundDevice = Db.getDeviceByHwId(dev_hw_id)
@@ -160,7 +158,7 @@ class DeviceController < ApplicationController
             end
         else
             id = foundDevice["id"]
-            Db.editDevice(id, dev_name, dev_desc)
+            Db.editDevice(id, dev_name)
             code = true
         end
 
@@ -170,8 +168,6 @@ class DeviceController < ApplicationController
 
         params = paramsForDevice(id, 0)
         ret["params"] = params
-
-        puts ret
 
         render :json => ret
     end
