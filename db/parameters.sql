@@ -38,7 +38,7 @@ insert into command_data (id, param_id, value) values
     (1, 'max_spd', '40'),
     (1, 'fuel', '0'),
     (1, 'max_fuel', '1000'),
-    (1, 'fuel_per_km', '20')
+    (1, 'fuel_per_km', '20'),
     (1, 'reliability', '1'),
     (1, 'hit_points', '100'),
     (1, 'max_hit_points', '100'),
