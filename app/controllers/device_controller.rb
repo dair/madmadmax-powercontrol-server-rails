@@ -46,7 +46,7 @@ class DeviceController < ApplicationController
     end
 
     def paramsForDevice(dev_id, param_id)
-        puts 'paramsForDevice: ' + param_id.to_s
+#        puts 'paramsForDevice: ' + param_id.to_s
         params = Db.getParametersForDevice(dev_id, param_id)
 
         ret = {}
@@ -60,7 +60,7 @@ class DeviceController < ApplicationController
             end
         end
 
-        puts ret
+#        puts ret
 
         return ret
     end
@@ -133,9 +133,9 @@ class DeviceController < ApplicationController
             end
 
             if params.has_key?("c")
-                puts '----------------------------'
-                puts params
-                puts '----------------------------'
+#                puts '----------------------------'
+#                puts params
+#                puts '----------------------------'
                 cmds = paramsForDevice(dev_id, params["c"].to_i)
                 res["params"] = cmds
             end
