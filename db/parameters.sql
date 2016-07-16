@@ -1,3 +1,11 @@
+delete from command_data;
+delete from command;
+delete from parameter;
+
+alter sequence command_id_seq restart;
+
+
+
 insert into parameter (id, name)
 values 
 
@@ -57,7 +65,7 @@ insert into command_data (id, param_id, value) values
     (1, 'red_zone', '25'),
     (1, 'damage_resistance', '0'),
     (1, 'p1_formula', '1-(4*x/3)^0.3'),
-    (1, 'p2_formula', '1-(2*x)^0.3')
+    (1, 'p2_formula', '1-(2*x)^0.3'),
     (1, 'malfunction_interval', '100'),
     (1, 'red_zone_reliability', '3'),
     (1, 'red_zone_fuel_per_km', '500'),

@@ -125,7 +125,7 @@ CREATE TABLE public.map (
 -- parameter
 
 CREATE TABLE public.parameter (
-    id varchar(20) not null,
+    id varchar(255) not null,
     name varchar(255) not null,
     CONSTRAINT id_parameter_pk PRIMARY KEY (id)
 );
@@ -141,8 +141,8 @@ CREATE TABLE public.command (
 
 CREATE TABLE public.command_data (
     id serial not null REFERENCES public.command MATCH FULL,
-    param_id varchar(20) not null REFERENCES public.parameter MATCH FULL,
-    value varchar(20) not null,
+    param_id varchar(255) not null REFERENCES public.parameter MATCH FULL,
+    value varchar(255) not null,
 
     CONSTRAINT num_param_id_command_pk PRIMARY KEY (id, param_id)
 );
@@ -194,6 +194,16 @@ CREATE INDEX device_info__key__idx on device_info using btree (key asc);
 create rule log_device_info as on INSERT to device_info
     where exists (select 1 from device_info d where d.dev_id = NEW.dev_id and d.key = NEW.key)
     do instead update device_info set value = new.value, dt = new.dt where dev_id = new.dev_id and key = new.key;
+
+
+CREATE TABLE device_dump (
+    id serial not null CONSTRAINT device_dump_pk PRIMARY KEY,
+    dev_id varchar(255) not null REFERENCES public.device ON DELETE CASCADE,
+    dt timestamp not null default now(),
+    message text default null
+);
+CREATE INDEX device_dump__dev_id__idx on device_dump using btree (dev_id asc);
+CREATE INDEX device_dump__dt__idx on device_dump using btree (dt asc);
 
 
 ALTER DATABASE __DATABASE_NAME__ SET bytea_output TO 'escape';

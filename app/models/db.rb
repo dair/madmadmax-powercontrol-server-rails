@@ -336,5 +336,10 @@ class Db < ActiveRecord::Base
             end
         end
     end
+
+    def self.addDump(dev_id, dt, text)
+        sql = "insert into device_dump (dev_id, dt, message) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(dt)} * INTERVAL '1 second'), #{sanitize(text)})"
+        connection.execute(sql)
+    end
 end
 
