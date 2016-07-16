@@ -110,6 +110,23 @@ class DeviceController < ApplicationController
                     res["code"] = 1
                     res["id"] = -1
                     res["fuel_code"] = {"amount" => amount, "code" => params['code']}
+                elsif type == "damage"
+                    t = params["time"].to_i / 1000.0
+                    raw = params["raw"]
+                    damage = params["damage"]
+
+                    text = "Damage: " + damage.to_s + " (" + raw + ")"
+
+                    Db.addDump(dev_id, t, text)
+                    res["code"] = 1
+                    
+                elsif type == "dump"
+                    t = params["time"].to_i / 1000.0
+                    text = params["text"]
+
+                    Db.addDump(dev_id, t, text)
+                    res["code"] = 1
+
                 elsif type == "info"
                     res["code"] = 1
                 end
