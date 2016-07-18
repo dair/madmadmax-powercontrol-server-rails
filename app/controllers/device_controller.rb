@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class DeviceController < ApplicationController
-    skip_before_filter :verify_authenticity_token, :only => [:p, :reg, :fuel]
+    skip_before_filter :verify_authenticity_token, :only => [:p, :reg, :fuel, :repair]
 
     def f0(l)
         ret = 0.0
@@ -151,12 +151,26 @@ class DeviceController < ApplicationController
         amount = 0
         if params.has_key?('dev_id') and params.has_key?('code')
             amount = Db.useFuelCode(params['code'], params['dev_id'])
-            if amount >= 0
+            if amount > 0
                 res_code = true
             end
         end
         res = {'code' => res_code, 'amount' => amount}
         puts res
+        render :json => res
+    end
+    
+    def repair
+        #entering repair code
+        res_code = false
+        amount = 0
+        if params.has_key?('dev_id') and params.has_key?('code')
+            amount = Db.useRepairCode(params['code'], params['dev_id'])
+            if amount > 0
+                res_code = true
+            end
+        end
+        res = {'code' => res_code, 'amount' => amount}
         render :json => res
     end
 

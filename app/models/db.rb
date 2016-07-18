@@ -344,5 +344,29 @@ class Db < ActiveRecord::Base
         sql = "insert into device_dump (dev_id, dt, message) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(dt)} * INTERVAL '1 second'), #{sanitize(text)})"
         connection.execute(sql)
     end
+
+    # repair codes
+    def self.useRepairCode(code, dev_id)
+        sql = %Q{select dev_id, amount from repair_code where code = #{sanitize(code)}}
+        rows = connection.select_all(sql)
+        if rows.rows.empty?
+            return -1 # no code
+        end
+
+        unless rows[0]['dev_id'].nil?
+            return 0 #used code
+        end
+
+        sql = %Q{update repair_code set dev_id = #{sanitize(dev_id)}, dt = now() where code = #{sanitize(code)} and dev_id is null returning amount}
+        upds = connection.select_all(sql)
+
+        if upds.rows.empty?
+            return -1
+        else
+            amount = upds[0]['amount']
+            return amount.to_i
+        end
+    end
+
 end
 

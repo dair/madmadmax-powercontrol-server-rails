@@ -205,6 +205,13 @@ CREATE TABLE device_dump (
 CREATE INDEX device_dump__dev_id__idx on device_dump using btree (dev_id asc);
 CREATE INDEX device_dump__dt__idx on device_dump using btree (dt asc);
 
+CREATE TABLE public.repair_code (
+    code varchar(20) not null constraint repair_code_pk primary key,
+    amount integer not null default 0,
+    dev_id varchar(255) default null REFERENCES public.device ON DELETE RESTRICT,
+    dt timestamp default null
+);
+
 
 ALTER DATABASE __DATABASE_NAME__ SET bytea_output TO 'escape';
 
