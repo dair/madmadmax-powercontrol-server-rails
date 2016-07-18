@@ -262,7 +262,10 @@ class Db < ActiveRecord::Base
         if upds.rows.empty?
             return -1
         else
-            return upds[0]['amount']
+            amount = upds[0]['amount']
+            puts amount
+            puts amount.class.name
+            return amount.to_i
         end
     end
 
