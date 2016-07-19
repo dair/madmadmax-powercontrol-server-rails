@@ -1,26 +1,39 @@
 <% if @params %>
     <h2>Параметры</h2>
-    <table>
-        <tr>
-            <td>
-                <table>
-                    <% for param in @params.keys %>
-                        <tr>
-                            <td align=right><%= @params[param]["name"]  %>:&nbsp;</td>
-                            <td align=left><tt><%= param %></tt></td>
-                            <td><%= @params[param]["value"] %></td>
-                        </tr>
-                    <% end %>
-                </table>
-            </td>
-            <td>
-                <%= params = { :action => "param_edit" }
-                    if defined? dev_id
-                        params[:dev_id] = dev_id
-                    end
-                    link_to "Редактировать", params, :class => "linkbutton" %>
-            </td>
-        <tr>
-    </table>
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#game">Игровое</a></li>
+        <li><a  data-toggle="tab" href="#tech">Техническое</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="game" class="tab-pane active">
+            <table>
+                <tr>
+                    <td>
+                        <table>
+                            <% for param in @params.keys %>
+                                <tr>
+                                    <td align=right><%= @params[param]["name"]  %>:&nbsp;</td>
+                                    <td align=left><tt><%= param %></tt></td>
+                                    <td><%= @params[param]["value"] %></td>
+                                </tr>
+                            <% end %>
+                        </table>
+                    </td>
+                    <td>
+                        <%= params = { :action => "param_edit" }
+                            if defined? dev_id
+                                params[:dev_id] = dev_id
+                            end
+                            link_to "Редактировать", params, :class => "linkbutton" %>
+                    </td>
+                <tr>
+            </table>
+        </div>
+        <div id="tech" class="tab-pane">
+            Пока ничо
+        </div>
+    </div>
 <% end %>
 
