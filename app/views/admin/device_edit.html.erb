@@ -41,7 +41,8 @@
 <%= render partial: "parameters", locals: { dev_id: @device["id"]} %>
 <%= form_tag({:action => "device_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
     <%= hidden_field_tag 'id', @device["id"] %>
-    <table>
+    <h3>Описание устройства</h3>
+    <table class="table table-striped">
         <tbody>
             <tr>
                 <td align="right">id</td>

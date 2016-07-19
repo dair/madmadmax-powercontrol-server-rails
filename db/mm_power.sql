@@ -126,6 +126,7 @@ CREATE TABLE public.map (
 
 CREATE TABLE public.parameter (
     id varchar(255) not null,
+    t char(1) not null default 'G',
     name varchar(255) not null,
     CONSTRAINT id_parameter_pk PRIMARY KEY (id)
 );

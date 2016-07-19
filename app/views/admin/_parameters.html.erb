@@ -8,31 +8,56 @@
 
     <div class="tab-content">
         <div id="game" class="tab-pane active">
-            <table>
+            <table class="table table-striped">
+                <% for param in @params.keys %>
+                    <% if @params[param]["t"] == "G" then %>
+                        <tr>
+                            <td align=right><%= @params[param]["name"]  %>:&nbsp;</td>
+                            <td align=left><tt><%= param %></tt></td>
+                            <td><%= @params[param]["value"] %></td>
+                        </tr>
+                    <% end %>
+                <% end %>
                 <tr>
                     <td>
-                        <table>
-                            <% for param in @params.keys %>
-                                <tr>
-                                    <td align=right><%= @params[param]["name"]  %>:&nbsp;</td>
-                                    <td align=left><tt><%= param %></tt></td>
-                                    <td><%= @params[param]["value"] %></td>
-                                </tr>
-                            <% end %>
-                        </table>
                     </td>
                     <td>
-                        <%= params = { :action => "param_edit" }
+                        <%= params = { :action => "param_edit", :t => "G" }
                             if defined? dev_id
                                 params[:dev_id] = dev_id
                             end
                             link_to "Редактировать", params, :class => "linkbutton" %>
                     </td>
-                <tr>
+                    <td>
+                    </td>
+                </tr>
             </table>
         </div>
         <div id="tech" class="tab-pane">
-            Пока ничо
+            <table class="table table-striped">
+                <% for param in @params.keys %>
+                    <% if @params[param]["t"] == "T" then %>
+                        <tr>
+                            <td align=right><%= @params[param]["name"]  %>:&nbsp;</td>
+                            <td align=left><tt><%= param %></tt></td>
+                            <td><%= @params[param]["value"] %></td>
+                        </tr>
+                    <% end %>
+                <% end %>
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                        <%= params = { :action => "param_edit", :t => "T" }
+                            if defined? dev_id
+                                params[:dev_id] = dev_id
+                            end
+                            link_to "Редактировать", params, :class => "linkbutton" %>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 <% end %>

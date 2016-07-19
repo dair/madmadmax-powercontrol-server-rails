@@ -1,22 +1,62 @@
-<%= form_tag({:action => "param_write"}, {:id => "device_form"}) do %>
-    <% if defined? @device_id %>
-        <%= hidden_field_tag 'dev_id', @device_id %>
-    <% end %>
-    <table>
-        <tbody>
-            <% for id in @params.keys %>
-                <tr>
-                    <td align=right><%= @params[id]['name'] %>:&nbsp;</td>
-                    <%= hidden_field_tag 'orig_' + id, @params[id]['value'] %>
-                    <td><%= text_field_tag('field_' + id, @params[id]['value'], :size => "100%", :maxlength => 100) %></td>
-                </tr>
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#game">Игровое</a></li>
+    <li><a  data-toggle="tab" href="#tech">Техническое</a></li>
+</ul>
+
+<div class="tab-content">
+    <div id="game" class="tab-pane active">
+        <%= form_tag({:action => "param_write"}, {:id => "device_form"}) do %>
+            <% if defined? @device_id %>
+                <%= hidden_field_tag 'dev_id', @device_id %>
             <% end %>
-            <tr>
-                <td/>
-                <td>
-                    <%= submit_tag("Сохранить") %>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-<% end %>
+
+            <table class="table table-striped">
+                <tbody>
+                    <% for id in @params.keys %>
+                        <% if @params[id]['t'] == "G" %>
+                            <tr>
+                                <td align=right><%= @params[id]['name'] %>:&nbsp;</td>
+                                <%= hidden_field_tag 'orig_' + id, @params[id]['value'] %>
+                                <td><%= text_field_tag('field_' + id, @params[id]['value'], :size => "100%", :maxlength => 100) %></td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                    <tr>
+                        <td/>
+                        <td>
+                            <%= submit_tag("Сохранить") %>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        <% end %>
+    </div>
+    <div id="tech" class="tab-pane">
+        <%= form_tag({:action => "param_write"}, {:id => "device_form"}) do %>
+            <% if defined? @device_id %>
+                <%= hidden_field_tag 'dev_id', @device_id %>
+            <% end %>
+
+            <table class="table table-striped">
+                <tbody>
+                    <% for id in @params.keys %>
+                        <% if @params[id]['t'] == "T" %>
+                            <tr>
+                                <td align=right><%= @params[id]['name'] %>:&nbsp;</td>
+                                <%= hidden_field_tag 'orig_' + id, @params[id]['value'] %>
+                                <td><%= text_field_tag('field_' + id, @params[id]['value'], :size => "100%", :maxlength => 100) %></td>
+                            </tr>
+                        <% end %>
+                    <% end %>
+                    <tr>
+                        <td/>
+                        <td>
+                            <%= submit_tag("Сохранить") %>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        <% end %>
+    </div>
+</div>

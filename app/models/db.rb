@@ -184,10 +184,10 @@ class Db < ActiveRecord::Base
     end
 
     def self.getAllParameters()
-        all_params = connection.select_all("select id, name from parameter order by id asc")
+        all_params = connection.select_all("select id, t, name from parameter order by id asc")
         res = {}
         for row in all_params
-            res[row["id"]] = {"name" => row["name"]}
+            res[row["id"]] = {"name" => row["name"], "t" => row["t"]}
         end
         return res
     end
