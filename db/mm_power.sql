@@ -213,6 +213,25 @@ CREATE TABLE public.repair_code (
     dt timestamp default null
 );
 
+-- upgrades
+CREATE TABLE public.upgrade (
+    id serial not null CONSTRAINT upgrade_pk PRIMARY KEY,
+    dev_id varchar(255) not null REFERENCES public.device ON DELETE CASCADE,
+    status char(1) not null default 'A',
+    dt timestamp default now(),
+    description text default null
+);
+
+CREATE INDEX upgrade__dev_id__idx on upgrade using btree (dev_id asc);
+
+CREATE TABLE public.upgrade_param (
+    upg_id integer not null REFERENCES public.upgrade on DELETE CASCADE,
+    param_id varchar(255) not null REFERENCES public.parameter on DELETE CASCADE,
+    value varchar(255) not null,
+
+    CONSTRAINT upgrade_param__pk PRIMARY KEY (upg_id, param_id)
+);
+
 
 ALTER DATABASE __DATABASE_NAME__ SET bytea_output TO 'escape';
 

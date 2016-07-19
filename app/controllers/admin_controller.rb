@@ -160,6 +160,7 @@ class AdminController < ApplicationController
 #                @device["name"] = dbdata["name"]
 #                @device["description"] = dbdata["description"]
 #            end
+            @upgrades = Db.getDeviceUpgrades(dev_id)
 
             @stat = Db.getLatestDeviceStat(dev_id)
         end
@@ -411,5 +412,39 @@ class AdminController < ApplicationController
         end
     end
 
+    def upgrade_edit
+        @dev_id = params["dev_id"]
+        upg_id = params["upg_id"]
+        #@upgrades = Db.getDeviceUpgrades(dev_id)
+        @params = Db.getAllParameters()
+        
+        @title = "Администрирование"
+        if upg_id.nil?
+            @subtitle = "Добавление улучшения автомобиля"
+        else
+            @subtitle = "Изменение улучшения автомобиля"
+        end
+        @breadcrumbs = [["Главная", 'main'] ]
+        @breadcrumbs << [@subtitle, '']
+    end
+
+    def upgrade_write
+        dev_id = params["dev_id"]
+        upg_id = params["upg_id"]
+        description = params["description"]
+        existingParams = Db.getAllParameters()
+
+        storeHash = {}
+
+        for k in params.keys
+            if existingParams.has_key?(k) and not params[k].strip.empty?
+                storeHash[k] = params[k].strip
+            end
+        end
+        
+        Db.editUpgrade(dev_id, upg_id, description, storeHash)
+
+        redirect_to :action => 'device_edit', :dev_id => dev_id
+    end
 end
 

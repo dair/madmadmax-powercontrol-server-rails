@@ -1,0 +1,41 @@
+<% if @upgrades %>
+    <% 
+        headers = {}
+        for u in @upgrades
+            if u["values"].nil?
+                next
+            end
+            for v in u["values"]
+                param_id = v["param_id"]
+                param_name = v["param_name"]
+                headers[param_id] = param_name
+            end
+        end
+    %>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <% for h in headers.keys %>
+                    <%= headers[h] %>
+                <% end %>
+            </tr>
+            <% for u in @upgrades %>
+                <tr>
+                    <% for v in u["values"] %>
+                        <td>
+                            <%= v["value"] %>
+                        </td>
+                    <% end %>
+                </tr>
+            <% end %>
+        </thead>
+    </table>
+<% else %>
+    Нет улучшений
+<% end %>
+<%= params = { :action => "upgrade_edit", :t => "T" }
+    if defined? dev_id
+        params[:dev_id] = dev_id
+    end
+    link_to "Добавить", params, :class => "linkbutton" %>
+

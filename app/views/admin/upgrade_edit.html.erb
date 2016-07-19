@@ -1,0 +1,34 @@
+<script>
+    function formSubmit()
+    {
+        return true;
+    }
+</script>
+<%= form_tag({:action => "upgrade_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
+    <%= hidden_field_tag 'dev_id', @dev_id %>
+    Описание:&nbsp;<%= text_field_tag("description", @params["description"], :size => "100%", :maxlength => 255) %>
+    <table class="table table-striped">
+        <% for p in @params.keys
+            if @params[p]["t"] != 'G'
+                next
+            end
+        %>
+            <tr>
+                <td>
+                    <tt><%= p %></tt>
+                </td>
+                <td>
+                    <%= @params[p]["name"] %>
+                </td>
+                <td>
+                    <%= text_field_tag(p, @params[p]["value"], :size => "100%", :maxlength => 255) %>
+                </td>
+            </tr>
+        <% end %>
+        <td></td>
+        <td>
+            <%= submit_tag("Сохранить") %>
+        </td>
+        <td></td>
+    </table>
+<% end %>

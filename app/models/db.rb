@@ -368,5 +368,43 @@ class Db < ActiveRecord::Base
         end
     end
 
+    #device upgrades
+    def self.getDeviceUpgrades(dev_id)
+        sql = %Q{select id, description from upgrade where dev_id = #{sanitize(dev_id)} and status = 'A' order by id asc}
+        rows = connection.select_all(sql)
+        if rows.empty?
+            return rows
+        end
+
+        for u in rows
+            up_id = u["id"]
+            sql = %Q{select p.id as param_id, p.name as param_name, up.value as value from parameter p, upgrade_param up where up.upg_id = #{sanitize(up_id)} and up.param_id = p.id}
+            values = connection.select_all(sql)
+            u["values"] = values
+        end
+
+        return rows
+    end
+
+    def self.editUpgrade(dev_id, upg_id, description, params)
+        transaction do
+            if upg_id.nil?
+                sql = %Q{insert into upgrade (dev_id, description) values (#{sanitize(dev_id)}, #{sanitize(description)}) returning id}
+                cmds = connection.select_all(sql)
+                upg_id = cmds[0]['id']
+            else
+                sql = %Q{update upgrade set description = #{sanitize(description)} where upg_id = #{sanitize(upg_id)}}
+                cmds = connection.execute(sql)
+            end
+            
+            sql = %Q{delete from upgrade_param where upg_id = #{sanitize(upg_id)}}
+            connection.execute(sql)
+
+            for p in params.keys
+                sql = %Q{insert into upgrade_param (upg_id, param_id, value) values (#{sanitize(upg_id)}, #{sanitize(p)}, #{sanitize(params[p])})}
+                connection.execute(sql)
+            end
+        end
+    end
 end
 

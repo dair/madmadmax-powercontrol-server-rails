@@ -38,47 +38,65 @@
         return true;
     }
 </script>
-<%= render partial: "parameters", locals: { dev_id: @device["id"]} %>
-<%= form_tag({:action => "device_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
-    <%= hidden_field_tag 'id', @device["id"] %>
-    <h3>Описание устройства</h3>
-    <table class="table table-striped">
-        <tbody>
-            <tr>
-                <td align="right">id</td>
-                <td><%= label_tag("label_id", @device["id"], :size => "100%", :maxlength => 10) %></td>
-            </tr>
-            <tr>
-                <td align="right">Hardware ID</td>
-                <td><%= label_tag("label_hwid", @device["hw_id"], :size => "100%", :maxlength => 10) %></td>
-            </tr>
-            <tr>
-                <td align="right">Название</td>
-                <td><%= text_field_tag("name", @device["name"], :size => "100%", :maxlength => 255) %></td>
-            </tr>
-            <tr>
-                <td align="right">Описание</td>
-                <td><%= label_tag("label_desc", @device["description"], :size => "100%", :maxlength => 10) %></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td>
-                    <%= submit_tag("Сохранить") %>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-<% end %>
+<ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#info">Информация</a></li>
+    <li><a data-toggle="tab" href="#params">Параметры</a></li>
+    <li><a data-toggle="tab" href="#upgrades">Улучшения</a></li>
+    <li><a data-toggle="tab" href="#stat">Статистика</a></li>
+</ul>
 
-Статистика:
-<table border=1>
-    <tbody>
-        <% for s in @stat %>
-            <tr>
-                <td><%= s["key"] %></td>
-                <td><%= s["value"] %></td>
-                <td><%= Time.parse(s["dt"] + ' GMT') %></td>
-            </tr>
+<div class="tab-content">
+    <div id="info" class="tab-pane active">
+        <%= form_tag({:action => "device_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
+            <%= hidden_field_tag 'id', @device["id"] %>
+            <h3>Описание устройства</h3>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td align="right">id</td>
+                        <td><%= label_tag("label_id", @device["id"], :size => "100%", :maxlength => 10) %></td>
+                    </tr>
+                    <tr>
+                        <td align="right">Hardware ID</td>
+                        <td><%= label_tag("label_hwid", @device["hw_id"], :size => "100%", :maxlength => 10) %></td>
+                    </tr>
+                    <tr>
+                        <td align="right">Название</td>
+                        <td><%= text_field_tag("name", @device["name"], :size => "100%", :maxlength => 255) %></td>
+                    </tr>
+                    <tr>
+                        <td align="right">Описание</td>
+                        <td><%= label_tag("label_desc", @device["description"], :size => "100%", :maxlength => 10) %></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <%= submit_tag("Сохранить") %>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         <% end %>
-    </tbody>
-</table>
+    </div>
+    <div id="params" class="tab-pane">
+        <%= render partial: "parameters", locals: { dev_id: @device["id"]} %>
+    </div>
+    <div id="upgrades" class="tab-pane">
+        <%= render partial: "upgrades", locals: { dev_id: @device["id"]} %>
+    </div>
+    <div id="stat" class="tab-pane">
+        Статистика:
+        <table border=1>
+            <tbody>
+                <% for s in @stat %>
+                    <tr>
+                        <td><%= s["key"] %></td>
+                        <td><%= s["value"] %></td>
+                        <td><%= Time.parse(s["dt"] + ' GMT') %></td>
+                    </tr>
+                <% end %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
