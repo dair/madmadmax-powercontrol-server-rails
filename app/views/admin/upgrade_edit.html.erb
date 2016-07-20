@@ -5,8 +5,13 @@
     }
 </script>
 <%= form_tag({:action => "upgrade_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
-    <%= hidden_field_tag 'dev_id', @dev_id %>
-    Описание:&nbsp;<%= text_field_tag("description", @params["description"], :size => "100%", :maxlength => 255) %>
+    <% unless @dev_id.nil? %>
+        <%= hidden_field_tag 'dev_id', @dev_id %>
+    <% end %>
+    <% unless @upg_id.nil? %>
+        <%= hidden_field_tag 'upg_id', @upg_id %>
+    <% end %>
+    Описание:&nbsp;<%= text_field_tag("description", @upgrade["description"], :size => "100%", :maxlength => 255) %>
     <table class="table table-striped">
         <% for p in @params.keys
             if @params[p]["t"] != 'G'
@@ -21,7 +26,14 @@
                     <%= @params[p]["name"] %>
                 </td>
                 <td>
-                    <%= text_field_tag(p, @params[p]["value"], :size => "100%", :maxlength => 255) %>
+                    <% 
+                        if @upgrade["values"].nil?
+                            value = ''
+                        else
+                            value = @upgrade["values"][p]
+                        end
+                    %>
+                    <%= text_field_tag(p, value, :size => "100%", :maxlength => 255) %>
                 </td>
             </tr>
         <% end %>

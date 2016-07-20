@@ -369,6 +369,17 @@ class Db < ActiveRecord::Base
     end
 
     #device upgrades
+
+    def self.getUpgradeValues(upg_id)
+        sql = %Q{select p.id as param_id, up.value as value from parameter p, upgrade_param up where up.upg_id = #{sanitize(upg_id)} and up.param_id = p.id}
+        values = connection.select_all(sql)
+        ret = {}
+        for v in values
+            ret[v["param_id"]] = v["value"]
+        end
+        return ret
+    end
+
     def self.getDeviceUpgrades(dev_id)
         sql = %Q{select id, description from upgrade where dev_id = #{sanitize(dev_id)} and status = 'A' order by id asc}
         rows = connection.select_all(sql)
@@ -378,12 +389,24 @@ class Db < ActiveRecord::Base
 
         for u in rows
             up_id = u["id"]
-            sql = %Q{select p.id as param_id, p.name as param_name, up.value as value from parameter p, upgrade_param up where up.upg_id = #{sanitize(up_id)} and up.param_id = p.id}
-            values = connection.select_all(sql)
+            values = getUpgradeValues(up_id)
             u["values"] = values
         end
 
         return rows
+    end
+
+    def self.getUpgrade(upg_id)
+        sql = %{select dev_id, description from upgrade where id = #{sanitize(upg_id)}}
+        rows = connection.select_all(sql)
+        if rows.empty?
+            return {}
+        end
+        ret = rows[0]
+
+        values = getUpgradeValues(upg_id)
+        ret["values"] = values
+        return ret
     end
 
     def self.editUpgrade(dev_id, upg_id, description, params)
@@ -393,7 +416,7 @@ class Db < ActiveRecord::Base
                 cmds = connection.select_all(sql)
                 upg_id = cmds[0]['id']
             else
-                sql = %Q{update upgrade set description = #{sanitize(description)} where upg_id = #{sanitize(upg_id)}}
+                sql = %Q{update upgrade set description = #{sanitize(description)} where id = #{sanitize(upg_id)}}
                 cmds = connection.execute(sql)
             end
             

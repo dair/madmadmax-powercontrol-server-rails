@@ -414,12 +414,18 @@ class AdminController < ApplicationController
 
     def upgrade_edit
         @dev_id = params["dev_id"]
-        upg_id = params["upg_id"]
-        #@upgrades = Db.getDeviceUpgrades(dev_id)
-        @params = Db.getAllParameters()
+        @upg_id = params["upg_id"]
         
+        
+        @params = Db.getAllParameters()
+        unless @upg_id.nil?
+            @upgrade = Db.getUpgrade(@upg_id)
+        else
+            @upgrade = {}
+        end
+
         @title = "Администрирование"
-        if upg_id.nil?
+        if @upg_id.nil?
             @subtitle = "Добавление улучшения автомобиля"
         else
             @subtitle = "Изменение улучшения автомобиля"
@@ -431,6 +437,10 @@ class AdminController < ApplicationController
     def upgrade_write
         dev_id = params["dev_id"]
         upg_id = params["upg_id"]
+        if dev_id.nil?
+            upgrade_params = Db.getUpgrade(upg_id)
+            dev_id = upgrade_params["dev_id"]
+        end
         description = params["description"]
         existingParams = Db.getAllParameters()
 

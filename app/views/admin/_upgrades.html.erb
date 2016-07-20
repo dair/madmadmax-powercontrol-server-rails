@@ -1,34 +1,56 @@
 <% if @upgrades %>
     <% 
         headers = {}
+        values = {}
         for u in @upgrades
             if u["values"].nil?
                 next
             end
-            for v in u["values"]
-                param_id = v["param_id"]
-                param_name = v["param_name"]
-                headers[param_id] = param_name
+            for v in u["values"].keys
+                param_id = v
+                #param_name = v["param_name"]
+                headers[param_id] = param_id
+                if values[param_id].nil?
+                    values[param_id] = {}
+                end
+                values[param_id][u["id"]] = u["values"][v]
             end
         end
     %>
-    <table class="table table-striped">
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
-                <% for h in headers.keys %>
-                    <%= headers[h] %>
+                    <th/>
+                <% for u in @upgrades %>
+                    <th>
+                        <%= u["description"] %>
+                    </th>
                 <% end %>
             </tr>
-            <% for u in @upgrades %>
+        </thead>
+        <tbody>
+            <% for h in headers.keys %>
                 <tr>
-                    <% for v in u["values"] %>
+                    <th>
+                        <tt><%= h %></tt><br/>
+                        <%= headers[h] %>
+                    </th>
+                    <% for u in @upgrades %>
                         <td>
-                            <%= v["value"] %>
+                            <%= values[h][u["id"]] %>
                         </td>
                     <% end %>
                 </tr>
             <% end %>
-        </thead>
+            <tr>
+                <td/>
+                <% for u in @upgrades %>
+                    <td>
+                        <%= link_to "Ред.", {:action => "upgrade_edit", :upg_id => u["id"]}, :class => "btn btn-default" %>
+                    </td>
+                <% end %>
+            </tr>
+        </tbody>
     </table>
 <% else %>
     Нет улучшений
