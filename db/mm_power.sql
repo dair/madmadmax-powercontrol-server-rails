@@ -223,6 +223,7 @@ CREATE TABLE public.upgrade (
 );
 
 CREATE INDEX upgrade__dev_id__idx on upgrade using btree (dev_id asc);
+CREATE INDEX upgrade__dt__idx on upgrade using btree (dt asc);
 
 CREATE TABLE public.upgrade_param (
     upg_id integer not null REFERENCES public.upgrade on DELETE CASCADE,

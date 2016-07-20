@@ -138,6 +138,15 @@ class DeviceController < ApplicationController
 #                puts '----------------------------'
                 cmds = paramsForDevice(dev_id, params["c"].to_i)
                 res["params"] = cmds
+
+                u = 0
+                if params.has_key?("u")
+                    u = params["u"]
+                    upgrades = Db.getDeviceUpgradesRaw(dev_id, u)
+                    unless upgrades.nil?
+                        res["upgrades"] = upgrades
+                    end
+                end
             end
         end
 

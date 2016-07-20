@@ -416,7 +416,7 @@ class Db < ActiveRecord::Base
                 cmds = connection.select_all(sql)
                 upg_id = cmds[0]['id']
             else
-                sql = %Q{update upgrade set description = #{sanitize(description)} where id = #{sanitize(upg_id)}}
+                sql = %Q{update upgrade set dt = now(), description = #{sanitize(description)} where id = #{sanitize(upg_id)}}
                 cmds = connection.execute(sql)
             end
             
@@ -431,8 +431,32 @@ class Db < ActiveRecord::Base
     end
 
     def self.upgradeDelete(upg_id)
-        sql = %Q{update upgrade set status = 'D' where id = #{sanitize(upg_id)}}
+        sql = %Q{update upgrade set status = 'D', dt = now() where id = #{sanitize(upg_id)}}
         connection.execute(sql)
+    end
+
+    def self.getDeviceUpgradesRaw(dev_id, dt)
+        sql = %{select id, extract(epoch from dt) as dt from upgrade where dev_id = #{sanitize(dev_id)} and dt > TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(dt)} * INTERVAL '1 second' and status = 'A'}
+        rows = connection.select_all(sql)
+        ret = {}
+
+        maxDt = 0
+        for r in rows
+            upg_id = r["id"]
+            values = getUpgradeValues(upg_id)
+            
+            ret[r["id"]] = values
+
+            dt = r["dt"].to_i
+            if maxDt < dt
+                maxDt = dt + 1
+            end
+        end
+        if maxDt > 0
+            ret["time"] = maxDt
+            return ret
+        end
+        return nil
     end
 end
 
