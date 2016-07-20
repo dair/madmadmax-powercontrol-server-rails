@@ -456,5 +456,19 @@ class AdminController < ApplicationController
 
         redirect_to :action => 'device_edit', :dev_id => dev_id
     end
+
+    def upgrade_delete
+        upg_id = params["upg_id"]
+        if upg_id.nil?
+            redirect_to :action => 'devices'
+            return
+        end
+        upgrade_params = Db.getUpgrade(upg_id)
+        dev_id = upgrade_params["dev_id"]
+        
+        Db.upgradeDelete(upg_id)
+
+        redirect_to :action => 'device_edit', :dev_id => dev_id
+    end
 end
 

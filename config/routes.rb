@@ -42,6 +42,7 @@ PowerControlServer::Application.routes.draw do
 
   get "admin/upgrade_edit"
   post "admin/upgrade_write"
+  get "admin/upgrade_delete"
 
   # Example of named route that can be invoked with purchase_url(id: product.id)
   #   get 'products/:id/purchase' => 'catalog#purchase', as: :purchase

@@ -1,3 +1,11 @@
+<script>
+    if (confirm("Вы подтверждаете удаление?")) {
+        return true;
+    } else {
+        return false;
+    }
+</script>
+
 <% if @upgrades %>
     <% 
         headers = {}
@@ -47,6 +55,7 @@
                 <% for u in @upgrades %>
                     <td>
                         <%= link_to "Ред.", {:action => "upgrade_edit", :upg_id => u["id"]}, :class => "btn btn-default" %>
+                        <%= link_to "X", {:action => "upgrade_delete",  :upg_id => u["id"]}, :class => "btn btn-default", :onclick => "return confirm('Удалить улучшение?');"%>
                     </td>
                 <% end %>
             </tr>

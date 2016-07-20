@@ -429,5 +429,10 @@ class Db < ActiveRecord::Base
             end
         end
     end
+
+    def self.upgradeDelete(upg_id)
+        sql = %Q{update upgrade set status = 'D' where id = #{sanitize(upg_id)}}
+        connection.execute(sql)
+    end
 end
 
