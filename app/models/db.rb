@@ -242,35 +242,37 @@ class Db < ActiveRecord::Base
     end
 
     def self.useFuelCode(code, dev_id)
-        sql = %Q{select dev_id, amount from fuel_code where code = #{sanitize(code)}}
+        sql = %Q{select dev_id, upg_id, amount from fuel_code where code = #{sanitize(code)}}
         rows = connection.select_all(sql)
         if rows.rows.empty?
-            return -1 # no code
+            return [-1, nil] # no code
         end
         unless rows[0]['dev_id'].nil?
-            return 0 #used code
+            return [0, nil] #used code
         end
 
-        sql = %Q{select id from device where id=#{sanitize(dev_id)}}
-        rows = connection.select_all(sql)
-        if rows.rows.empty?
-            addDevice(dev_id, nil)
-        end
+#        sql = %Q{select id from device where id=#{sanitize(dev_id)}}
+#        rows = connection.select_all(sql)
+#        if rows.rows.empty?
+#            addDevice(dev_id, nil)
+#        end
         sql = %Q{update fuel_code set dev_id = #{sanitize(dev_id)}, dt = now() where code = #{sanitize(code)} and dev_id is null returning amount}
         upds = connection.select_all(sql)
 
         if upds.rows.empty?
-            return -1
+            return [-1, nil]
         else
+            upgradeValues = nil
+            unless upg_id.nil?
+                upgradeValues = getUpgradeValues(upg_id)
+            end
             amount = upds[0]['amount']
-            puts amount
-            puts amount.class.name
-            return amount.to_i
+            return [amount.to_i, nil]
         end
     end
 
     def self.getAllFuelCodes()
-        sql = %Q{select fuel_code.code, fuel_code.amount, fuel_code.dev_id, extract(epoch from fuel_code.dt), device.name from fuel_code left outer join device on fuel_code.dev_id = device.id}
+        sql = %Q{select fuel_code.code, fuel_code.upg_id, fuel_code.amount, fuel_code.dev_id, extract(epoch from fuel_code.dt), device.name from fuel_code left outer join device on fuel_code.dev_id = device.id}
         ret = connection.select_all(sql)
         return ret.to_hash
     end

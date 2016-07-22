@@ -105,11 +105,6 @@ class DeviceController < ApplicationController
                     res["code"] = 1
                 elsif type == "location"
                     res = addP(params)
-                elsif type == "code"
-                    amount = Db.useFuelCode(params['code'], dev_id)
-                    res["code"] = 1
-                    res["id"] = -1
-                    res["fuel_code"] = {"amount" => amount, "code" => params['code']}
                 elsif type == "damage"
                     t = params["time"].to_i / 1000.0
                     raw = params["raw"]
@@ -159,12 +154,15 @@ class DeviceController < ApplicationController
         res_code = false
         amount = 0
         if params.has_key?('dev_id') and params.has_key?('code')
-            amount = Db.useFuelCode(params['code'], params['dev_id'])
+            amount, upgrades = Db.useFuelCode(params['code'], params['dev_id'])
             if amount > 0
                 res_code = true
             end
         end
         res = {'code' => res_code, 'amount' => amount}
+        unless upgrades.nil?
+            res["upgrades"] = upgrades
+        end
         puts res
         render :json => res
     end

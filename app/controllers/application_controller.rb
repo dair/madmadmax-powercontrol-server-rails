@@ -110,14 +110,6 @@ class ApplicationController < ActionController::Base
         return
     end
     
-    def map_image
-        if !checkLogin
-            return
-        end
-        mapImage = Db.mapImage()
-        send_data mapImage[:map], :type => mapImage[:content_type], :disposition => 'inline'
-    end
-
     def parseTime(t)
         Time.parse(t.to_s + ' GMT')
     end
