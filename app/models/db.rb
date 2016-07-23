@@ -300,13 +300,12 @@ class Db < ActiveRecord::Base
                     begin
                         sql = "select count(*) from device_stat where dev_id = #{sanitize(dev_id)} and dt = TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ) and key = #{sanitize(k)}"
                         rows = connection.select_all(sql)
-                        if rows[0]["count"] == 0
+                        puts 'select returned ' + rows.to_ary.to_s
+                        if rows[0]["count"].to_i == 0
                             sql = "insert into device_stat (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize(k)}, #{sanitize(v)})"
                             connection.insert(sql)
                         end
                         repeat = false
-                    rescue ActiveRecord::InvalidForeignKey
-                        addDevice(dev_id, nil)
                     rescue ActiveRecord::RecordNotUnique
                         repeat = false
                     end
@@ -459,6 +458,40 @@ class Db < ActiveRecord::Base
             return ret
         end
         return nil
+    end
+
+    def self.getDeviceTracksSeparated(dev_id)
+        # first, read all start/stop markers from device_stat
+        sql = %Q{select extract(epoch from dt) as dt from device_stat where dev_id = #{sanitize(dev_id)} and key in ('mark_start', 'mark_stop')}
+        markers = connection.select_all(sql)
+
+        ret = []
+
+        time0 = 0
+        for marker in markers
+            t = marker["dt"].to_f
+            sql = %Q{select latitude, longitude from point where device_id = #{sanitize(dev_id)} and dt between (TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(time0)} * INTERVAL '1 second') and (TIMESTAMP WITHOUT TIME ZONE 'epoch' + #{sanitize(t)} * INTERVAL '1 second') order by dt asc}
+            points = connection.select_all(sql)
+
+            unless points.empty?
+                if time0 == 0
+                    name = '...-' + Time.at(t).to_s
+                else
+                    name = Time.at(time0).to_s + "..." + Time.at(t).to_s
+                end
+                
+                track = []
+                for p in points
+                    track.push([p["latitude"], p["longitude"]])
+                end
+                
+                ret.push({"name" => name, "track" => track})
+            end
+
+            time0 = t
+        end
+
+        return ret
     end
 end
 

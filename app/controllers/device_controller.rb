@@ -1,7 +1,7 @@
 # coding: utf-8
 
 class DeviceController < ApplicationController
-    skip_before_filter :verify_authenticity_token, :only => [:p, :reg, :fuel, :repair]
+    skip_before_filter :verify_authenticity_token, :only => [:p, :reg, :fuel, :repair, :track]
 
     def f0(l)
         ret = 0.0
@@ -78,7 +78,6 @@ class DeviceController < ApplicationController
                     marker = params["tag"]
                     unless marker.nil?
                         Db.addDeviceStat(dev_id, t, {('mark_' + marker) => ''})
-                        Db.setDeviceInfo(dev_id, [{'key' => 'last_ping', 'value' => '', 'dt' => t}])
                     end
                 elsif type == "ping"
                     t = params["time"].to_i / 1000.0
@@ -209,6 +208,13 @@ class DeviceController < ApplicationController
         ret["params"] = params
 
         render :json => ret
+    end
+
+    def track
+        dev_id = params["dev_id"]
+        tracks = Db.getDeviceTracksSeparated(dev_id)
+
+        render :json => tracks
     end
 end
 

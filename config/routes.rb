@@ -36,6 +36,7 @@ PowerControlServer::Application.routes.draw do
   post "device/reg"
   post "device/fuel"
   post "device/repair"
+  get "device/track"
 
   get "admin/upgrade_edit"
   post "admin/upgrade_write"
