@@ -77,4 +77,6 @@ PowerControlServer::Application.configure do
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
+
+  Rails.application.config.assets.precompile += %w( *.js ^[^_]*.css *.css.erb )
 end
