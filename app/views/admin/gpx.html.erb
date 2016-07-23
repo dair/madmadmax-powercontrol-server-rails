@@ -4,38 +4,77 @@
 </script>
 
 <script type="text/javascript">
-    ymaps.ready(init);
-    function init ()
-    {
-        var myMap = new ymaps.Map("map",
-        {
-            center: [<%= (@map["minlat"] + @map["maxlat"]) / 2  %>, <%= (@map["minlon"] + @map["maxlon"]) / 2  %>],
-            zoom: 13
-        });
+    !function(){
+        var apiAdress = "../fake_data.json";
+        // Впишите адрес прямо сюда
 
-        var myGeoObject = new ymaps.GeoObject({
-            geometry: {
-                type: "LineString",
-                coordinates: [
-<%= @map["points"].values.map{|v| "[" + v["lat"].to_s + ", " + v["lon"].to_s + "]"}.join(", ") %>
-                ]
-            },
-            properties:{
-                hintContent: "<%= @map["name"] %>"
+        var domElementId = "trackSelector";
+        // в документ нужно вставить <div id="trackSelector"><div>
+
+        var mapObjectName = "myMap";
+        // сделайте объеккт Яндекс-карты глобальным (полем объекта window) и укажите здесь его имя.
+
+        var map, trackList;
+        var request = new XMLHttpRequest();
+
+        request.onreadystatechange = function() {
+            var i, selector = '';
+            var domElement = document.getElementById(domElementId);
+            if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
+
+                trackList = JSON.parse(request.responseText ) || console.log("Error: no data received from server") || [];
+
+                for (i=0; i<trackList.length; i++) {
+                    selector += '<label style="display: block">';
+                    selector += '<input type="radio" name="track" value="' + i + '" />';
+                    selector += trackList[i].name + '</label>';
+                }
+
+                domElement.innerHTML = selector;
+
+                for (i=0; i<trackList.length; i++) {
+                    if (domElement.children[i]) {
+                      domElement.children[i].children[0].onchange = mapSelector;
+                    }
+                }
             }
-        }, {
-            draggable: false,
-            strokeColor: "#FF0000",
-            strokeWidth: 5
+        }
+
+        ymaps.ready(function() {
+            map = new ymaps.Map("map",
+            {
+                center: [<%= (@map["minlat"] + @map["maxlat"]) / 2  %>, <%= (@map["minlon"] + @map["maxlon"]) / 2  %>],
+                zoom: 13
+            });
         });
 
-        myMap.geoObjects.add(myGeoObject);
-    }
+        request.open("GET", apiAdress);
+        //console.log(apiAdress);
+        //request.setRequestHeader()
+        request.send();
 
+        var mapSelector = function() {
+            var id = this.value || console.log("Error: no value set on:", this);
+            var myTrack = new ymaps.GeoObject({
+                geometry: {
+                    type: "LineString",
+                    coordinates: trackList[id].track,
+                },
+                properties:{
+                    hintContent: ""
+                }
+            }, {
+                draggable: false,
+                strokeColor: "#FF0000",
+                strokeWidth: 5
+            });
+            map.geoObjects.each(function(track){map.geoObjects.remove(track)})
+            map.geoObjects.add(myTrack);
+        }
 
+    }();
 </script>
- 
+
  <h1>Вывод gpx трека на карту Яндекса</h1>
+ <div id="trackSelector" style="width:200px; float: right"></div>
  <div id="map" style="width: 800px; height: 600px"></div>
-
-
