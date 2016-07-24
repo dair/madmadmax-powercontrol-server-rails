@@ -92,7 +92,7 @@
                     <tr>
                         <td><%= s["key"] %></td>
                         <td><%= s["value"] %></td>
-                        <td><%= Time.parse(s["dt"] + ' GMT') %></td>
+                        <td><%= Time.at(s["dt"].to_f) %></td>
                     </tr>
                 <% end %>
             </tbody>

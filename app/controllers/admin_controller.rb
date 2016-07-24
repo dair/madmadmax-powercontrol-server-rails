@@ -125,7 +125,6 @@ class AdminController < ApplicationController
 
         @params = Db.getCommonParameters()
         @known_list = Db.getAllKnownDevices()
-        @unknown_list = Db.getAllUnknownDevices()
 
         @title = "Администрирование"
         @subtitle = "Устройства"
@@ -377,7 +376,7 @@ class AdminController < ApplicationController
         @upg_id = params["upg_id"]
         
         
-        @params = Db.getAllParameters()
+        @params = Db.getAllParameters('use_tech = 1')
         unless @upg_id.nil?
             @upgrade = Db.getUpgrade(@upg_id)
         else

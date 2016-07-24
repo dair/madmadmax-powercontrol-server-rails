@@ -10,19 +10,6 @@ end
 
 <%= render partial: "parameters", dev_id: nil %>
 
-<% if not @unknown_list.empty? %>
-    <h2>Неизвестные устройства</h2>
-    <%  i = 1
-        for u in @unknown_list %>
-        <% row_type = i % 2 == 0 ? "devices_table_row_even": "devices_table_row_odd"
-           i = i + 1 %>
-        <div class="devices_table_row <%= row_type %>">
-            <div class="devices_table_cell"><%= link_to u['id'], device_edit_path(u['id']) %></div>
-        </div>
-    <% end %>
-    
-<% end %>
-
 <div class="devices_table">
     <h2>Известные устройства</h2>
     <% if @known_list.empty? %>

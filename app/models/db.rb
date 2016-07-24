@@ -183,8 +183,12 @@ class Db < ActiveRecord::Base
         return true
     end
 
-    def self.getAllParameters()
-        all_params = connection.select_all("select id, t, name from parameter order by id asc")
+    def self.getAllParameters(where=nil)
+        whereClause = ''
+        unless where.nil?
+            whereClause = "where " + where
+        end
+        all_params = connection.select_all("select id, t, name from parameter " + whereClause + " order by id asc")
         res = {}
         for row in all_params
             res[row["id"]] = {"name" => row["name"], "t" => row["t"]}
