@@ -5,7 +5,7 @@
 
 <script type="text/javascript">
     !function(){
-        var apiAdress = "../fake_data.json";
+        var apiAdress = "/device/track?dev_id=<%= @dev_id %>";
         // Впишите адрес прямо сюда
 
         var domElementId = "trackSelector";
@@ -43,7 +43,6 @@
         ymaps.ready(function() {
             map = new ymaps.Map("map",
             {
-                center: [<%= (@map["minlat"] + @map["maxlat"]) / 2  %>, <%= (@map["minlon"] + @map["maxlon"]) / 2  %>],
                 zoom: 13
             });
         });

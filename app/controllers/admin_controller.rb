@@ -335,44 +335,10 @@ class AdminController < ApplicationController
         end
 
         if params.has_key?("dev_id")
-            dev_id = params["dev_id"]
-            pts = Db.points([dev_id], 0)
-            points = pts[dev_id]
-            max_time = 0
-            min_lat = 1000
-            min_lon = 1000
-            max_lat = -1000
-            max_lon = -1000
-
-            points.each do |k,v|
-                if max_time < k
-                    max_time = k
-                end
-                if min_lat > v["lat"]
-                    min_lat = v["lat"]
-                end
-                if min_lon > v["lon"]
-                    min_lon = v["lon"]
-                end
-                if max_lat < v["lat"]
-                    max_lat = v["lat"]
-                end
-                if max_lon < v["lon"]
-                    max_lon = v["lon"]
-                end
-            end
-
-            @map = {}
-            @map["time"] = max_time
-            @map["minlat"] = min_lat
-            @map["minlon"] = min_lon
-            @map["maxlat"] = max_lat
-            @map["maxlon"] = max_lon
-            @map["points"] = points
-            puts @map
+            @dev_id = params["dev_id"]
         
             @title = "Администрирование"
-            device = Db.getDevice(dev_id)
+            device = Db.getDevice(@dev_id)
             @subtitle = "Карта приключений: \"" + device['name'] + "\""
             @breadcrumbs = [["Главная", 'main'], ["Устройства", 'devices']]
             #@breadcrumbs << [device['name'], 'device_edit/' + device['id']]
