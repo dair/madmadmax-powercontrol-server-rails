@@ -255,6 +255,8 @@ class Db < ActiveRecord::Base
             return [0, nil] #used code
         end
 
+        upg_id = rows[0]["upg_id"]
+
 #        sql = %Q{select id from device where id=#{sanitize(dev_id)}}
 #        rows = connection.select_all(sql)
 #        if rows.rows.empty?
@@ -276,7 +278,7 @@ class Db < ActiveRecord::Base
     end
 
     def self.getAllFuelCodes()
-        sql = %Q{select fuel_code.code, fuel_code.upg_id, fuel_code.amount, fuel_code.dev_id, extract(epoch from fuel_code.dt), device.name from fuel_code left outer join device on fuel_code.dev_id = device.id}
+        sql = %Q{select fuel_code.code as code, fuel_code.upg_id as upg_id, fuel_code.amount as amount, fuel_code.dev_id as dev_id, extract(epoch from fuel_code.dt) as dt, device.name  as name from fuel_code left outer join device on fuel_code.dev_id = device.id}
         ret = connection.select_all(sql)
         return ret.to_hash
     end
@@ -286,7 +288,7 @@ class Db < ActiveRecord::Base
             for row in codes
                 code = row['code']
                 amount = row['amount']
-                sql = %Q{insert into fuel_code (code, amount) values (#{row['code']}, #{row['amount']})}
+                sql = %Q{insert into fuel_code (code, amount, upg_id) values (#{sanitize(row['code'])}, #{sanitize(row['amount'])}, #{sanitize(row['upg_id'])})}
                 connection.insert(sql)
             end
         end
@@ -298,36 +300,39 @@ class Db < ActiveRecord::Base
     end
 
     def self.addDeviceStat(dev_id, t, stat)
-            stat.each do |k,v|
-                repeat = true
-                while repeat
-                    begin
-                        sql = "select count(*) from device_stat where dev_id = #{sanitize(dev_id)} and dt = TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ) and key = #{sanitize(k)}"
-                        rows = connection.select_all(sql)
-                        puts 'select returned ' + rows.to_ary.to_s
-                        if rows[0]["count"].to_i == 0
-                            sql = "insert into device_stat (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize(k)}, #{sanitize(v)})"
-                            connection.insert(sql)
-                        end
-                        repeat = false
-                    rescue ActiveRecord::RecordNotUnique
-                        repeat = false
+        if stat.nil?
+            return
+        end
+        stat.each do |k,v|
+            repeat = true
+            while repeat
+                begin
+                    sql = "select count(*) from device_stat where dev_id = #{sanitize(dev_id)} and dt = TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ) and key = #{sanitize(k)}"
+                    rows = connection.select_all(sql)
+                    puts 'select returned ' + rows.to_ary.to_s
+                    if rows[0]["count"].to_i == 0
+                        sql = "insert into device_stat (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize(k)}, #{sanitize(v)})"
+                        connection.insert(sql)
                     end
-                end
-
-                repeat = true
-                while repeat
-                    begin
-                        sql = "insert into device_info (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize('stat_' + k)}, #{sanitize(v)})"
-                        connection.execute(sql)
-                        repeat = false
-                    rescue ActiveRecord::InvalidForeignKey
-                        addDevice(dev_id, nil)
-                    rescue ActiveRecord::RecordNotUnique
-                        repeat = false
-                    end
+                    repeat = false
+                rescue ActiveRecord::RecordNotUnique
+                    repeat = false
                 end
             end
+
+            repeat = true
+            while repeat
+                begin
+                    sql = "insert into device_info (dev_id, dt, key, value) values (#{sanitize(dev_id)}, TIMESTAMP WITHOUT TIME ZONE 'epoch' + (#{sanitize(t)} * INTERVAL '1 second' ), #{sanitize('stat_' + k)}, #{sanitize(v)})"
+                    connection.execute(sql)
+                    repeat = false
+                rescue ActiveRecord::InvalidForeignKey
+                    addDevice(dev_id, nil)
+                rescue ActiveRecord::RecordNotUnique
+                    repeat = false
+                end
+            end
+        end
     end
 
     def self.getLatestDeviceStat(dev_id)

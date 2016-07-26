@@ -38,6 +38,7 @@ PowerControlServer::Application.routes.draw do
   post "device/repair"
   get "device/track"
 
+  get "admin/fuel_upgrade_edit"
   get "admin/upgrade_edit"
   post "admin/upgrade_write"
   get "admin/upgrade_delete"

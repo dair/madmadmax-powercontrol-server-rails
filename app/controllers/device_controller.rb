@@ -65,14 +65,22 @@ class DeviceController < ApplicationController
         return ret
     end
 
-    def p
+    def subP(params)
         res = { "code" => 0 }
 
         if params.has_key?("id")
             dev_id = params["id"]
             if params.has_key?("type")
                 type = params["type"]
-                if type == "marker"
+                if type == "bundle"
+                    puts '------------------BUNDLE------------------------'
+                    data = params["data"] # should be array
+                    for item in data
+                        subP(item)
+                    end
+                    res["code"] = 1
+                    puts '------------------BUNDLE------------------------'
+                elsif type == "marker"
                     res["code"] = 1
                     t = params["time"].to_i / 1000.0
                     marker = params["tag"]
@@ -122,6 +130,8 @@ class DeviceController < ApplicationController
                     res["code"] = 1
 
                 elsif type == "info"
+                    t = params["time"].to_i / 1000.0
+                    Db.addDeviceStat(dev_id, t, params["info"])
                     res["code"] = 1
                 end
             end
@@ -144,6 +154,11 @@ class DeviceController < ApplicationController
             end
         end
 
+        return res
+    end
+
+    def p
+        res = subP(params)
         #puts "Returning: " + res.to_s
         render :json => res
     end

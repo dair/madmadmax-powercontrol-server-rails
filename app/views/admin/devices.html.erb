@@ -10,24 +10,30 @@ end
 
 <%= render partial: "parameters", dev_id: nil %>
 
-<div class="devices_table">
-    <h2>Известные устройства</h2>
+<h2>Известные устройства</h2>
     <% if @known_list.empty? %>
         Известных устройств нет
     <% else %>
-        <%  i = 1
-            for u in @known_list %>
-            <% row_type = i % 2 == 0 ? "devices_table_row_even": "devices_table_row_odd"
-               i = i + 1 %>
-            <div class="devices_table_row <%= row_type %>">
-                <div class="devices_table_cell"><%= link_to u['id'], device_edit_path(u['id']) %></div>
-                <div class="devices_table_cell"><%= link_to u['name'], device_edit_path(u['id']) %></div>
-                <div class="devices_table_cell"><%= u['type'] == 'A'? "Броня": "Транспорт" %></div>
-                <div class="devices_table_cell">ping:&nbsp;<script>document.write(showTime(<%= u['ping_dt'].nil? ? '---' : u['ping_dt'] %>));</script></div>
-                <div class="devices_table_cell">gps:&nbsp;<script>document.write(showTime(<%= u['point_dt'].nil? ? '---': u['point_dt'] %>));</script></div>
-                <div class="devices_table_cell"><%= u['point_dt'].nil? ? "": (link_to 'карта', map_path(u['id'])) %></div>
-            </div>
-        <% end %>
+
+        <table class="table table-striped">
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Последний ping</th>
+                <th>Последние данные</th>
+                <th>Карта</th>
+            </tr>
+            <%  i = 1
+                for u in @known_list %>
+                <tr>
+                    <td><%= link_to u['id'], device_edit_path(u['id']) %></td>
+                    <td><%= link_to u['name'], device_edit_path(u['id']) %></td>
+                    <td>ping:&nbsp;<%= u['ping_dt'].nil? ? '---' : Time.at(u['ping_dt'].to_f) %></td>
+                    <td>gps:&nbsp;<%= u['point_dt'].nil? ? '---': Time.at(u['point_dt'].to_f) %></td>
+                    <td><%= u['point_dt'].nil? ? "": (link_to 'карта', map_path(u['id'])) %></td>
+                </tr>
+            <% end %>
+        </table>
     <% end %>
 </div>
 

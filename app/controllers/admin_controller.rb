@@ -274,6 +274,13 @@ class AdminController < ApplicationController
         end
         
         @codes = Db.getAllFuelCodes()
+        for c in @codes
+            unless c["upg_id"].nil?
+                upgrade = Db.getUpgrade(c["upg_id"])
+                c["upgrade"] = upgrade
+            end
+        end
+        @all_upgrades = Db.getDeviceUpgrades('0')
         
         @title = "Администрирование"
         @subtitle = "Коды канистр топлива"
@@ -289,6 +296,11 @@ class AdminController < ApplicationController
         
         count = id0(params['count'])
         amount = id0(params['amount'])
+        
+        upg_id = nil
+        unless params['upg_id'].nil? or params['upg_id'] == 'none'
+            upg_id = id0(params['upg_id'])
+        end
 
         if count == 0
             addError('И зачем добавлять ничего?')
@@ -303,7 +315,7 @@ class AdminController < ApplicationController
                 if calcDigit(code, 6) < 3
                     ex = Db.checkCodeExists(code)
                     unless ex
-                        line = { 'code' => code.to_s, 'amount' => amount }
+                        line = { 'code' => code.to_s, 'amount' => amount, 'upg_id' => upg_id }
                         codes << line
                         i += 1
                     end
@@ -383,6 +395,7 @@ class AdminController < ApplicationController
             @upgrade = {}
         end
 
+
         @title = "Администрирование"
         if @upg_id.nil?
             @subtitle = "Добавление улучшения автомобиля"
@@ -391,6 +404,30 @@ class AdminController < ApplicationController
         end
         @breadcrumbs = [["Главная", 'main'] ]
         @breadcrumbs << [@subtitle, '']
+    end
+
+    def fuel_upgrade_edit
+        @upg_id = params["upg_id"]
+        @params = Db.getAllParameters('use_fuel = 1')
+        @dev_id = '0'
+
+        unless @upg_id.nil?
+            @upgrade = Db.getUpgrade(@upg_id)
+        else
+            @upgrade = {}
+        end
+
+        @title = "Администрирование"
+        if @upg_id.nil?
+            @subtitle = "Добавление улучшения топлива"
+        else
+            @subtitle = "Изменение улучшения топлива"
+        end
+        @breadcrumbs = [["Главная", 'main'] ]
+        @breadcrumbs << [@subtitle, '']
+
+        @return_to = 'fuelcodes'
+        render 'upgrade_edit'
     end
 
     def upgrade_write
@@ -413,7 +450,11 @@ class AdminController < ApplicationController
         
         Db.editUpgrade(dev_id, upg_id, description, storeHash)
 
-        redirect_to :action => 'device_edit', :dev_id => dev_id
+        if params['return_to'].nil?
+            redirect_to :action => 'device_edit', :dev_id => dev_id
+        else
+            redirect_to :action => params['return_to']
+        end
     end
 
     def upgrade_delete

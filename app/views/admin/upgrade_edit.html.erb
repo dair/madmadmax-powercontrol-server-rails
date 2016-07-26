@@ -5,6 +5,9 @@
     }
 </script>
 <%= form_tag({:action => "upgrade_write"}, {:id => "device_form", :onSubmit => 'return formSubmit();'}) do %>
+    <% unless @return_to.nil? %>
+        <%= hidden_field_tag 'return_to', @return_to %>
+    <% end %>
     <% unless @dev_id.nil? %>
         <%= hidden_field_tag 'dev_id', @dev_id %>
     <% end %>
