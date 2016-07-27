@@ -10,6 +10,8 @@ Bundler.require(:default, Rails.env)
 module PowerControlServer
   class Application < Rails::Application
     config.middleware.insert_before(Rack::Runtime, "::HeaderDelete")
+    config.middleware.insert_before ActionDispatch::ParamsParser, "CompressedRequests"
+
     #config.middleware.insert_before(Rack::Lock, "::HeaderDelete")
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
