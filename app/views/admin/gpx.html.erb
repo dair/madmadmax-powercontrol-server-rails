@@ -11,21 +11,18 @@
         var domElementId = "trackSelector";
         // в документ нужно вставить <div id="trackSelector"><div>
 
-        var mapObjectName = "myMap";
-        // сделайте объеккт Яндекс-карты глобальным (полем объекта window) и укажите здесь его имя.
-
         var map, trackList;
         var request = new XMLHttpRequest();
 
         request.onreadystatechange = function() {
-            var i, selector = '';
+            var center, i, selector = '';
             var domElement = document.getElementById(domElementId);
             if(request.readyState === XMLHttpRequest.DONE && request.status === 200) {
 
                 trackList = JSON.parse(request.responseText ) || console.log("Error: no data received from server") || [];
 
                 for (i=0; i<trackList.length; i++) {
-                    selector += '<label style="display: block">';
+                    selector += '<label style="display: block; user-select: none; -webkit-user-select: none">';
                     selector += '<input type="radio" name="track" value="' + i + '" />';
                     selector += trackList[i].name + '</label>';
                 }
@@ -37,14 +34,18 @@
                       domElement.children[i].children[0].onchange = mapSelector;
                     }
                 }
+
             }
         }
 
         ymaps.ready(function() {
             map = new ymaps.Map("map",
             {
-                zoom: 13
+                center: [59.950132, 30.316043],
+                zoom: 13,
+                type: 'yandex#hybrid'
             });
+            map.controls.add('zoomControl').add('typeSelector');
         });
 
         request.open("GET", apiAdress);
@@ -53,7 +54,35 @@
         request.send();
 
         var mapSelector = function() {
+            var position, i, minX, maxX, minY, maxY, move;
             var id = this.value || console.log("Error: no value set on:", this);
+            minX = maxX = trackList[id].track[0][0];
+            minY = maxY = trackList[id].track[0][1];
+            for (i = trackList[id].track.length; i--;) {
+              minX = Math.min(trackList[id].track[i][0], minX);
+              maxX = Math.max(trackList[id].track[i][0], maxX);
+              minY = Math.min(trackList[id].track[i][1], minY);
+              maxY = Math.max(trackList[id].track[i][1], maxY);
+            }
+
+            position = ymaps.util.bounds.getCenterAndZoom(
+              [[minX, minY], [maxX, maxY]],
+              map.container.getSize()
+            )
+
+            map.zoomRange.get(position.center).then(function (range) {
+
+              move = new ymaps.map.action.Single({
+                center: position.center,
+                zoom: Math.min(position.zoom, range[1]),
+                duration: 200,
+                timingFunction: 'ease-in'
+              });
+
+              map.action.execute(move);
+
+          });
+
             var myTrack = new ymaps.GeoObject({
                 geometry: {
                     type: "LineString",
