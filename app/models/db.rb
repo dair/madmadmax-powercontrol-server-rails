@@ -502,5 +502,22 @@ class Db < ActiveRecord::Base
 
         return ret
     end
+
+
+#======================================================
+# CHAT
+# =====================================================
+    def self.getChatLogSince(id)
+        sql = %Q{select id, message from chat_log where id >= #{sanitize(id)} order by id asc}
+        rows = connection.select_all(sql)
+
+        return rows
+    end
+
+    def self.addChatMessage(msg)
+        sql = %Q{insert into chat_log (message) values (#{sanitize(msg)}) returning id}
+        rows = connection.select_all(sql)
+        return rows[0]["id"]
+    end
 end
 
