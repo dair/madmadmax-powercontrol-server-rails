@@ -1,28 +1,10 @@
 == README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Это сервер для учёта уровня топлива и состояния автомобилей для ролевых игр. Полноценно было использовано на игре Mad Mad Max 2016 года.
 
-Things you may want to cover:
+Для работы хочет Ruby on Rails и сервер БД postgres
+Версии какие-то, не помню наизусть, последние актуальные на август 2016 года.
 
-* Ruby version
+В каталоге db/ лежит скрипт recreate_db.sh, который должен создать нормально базу. Хочет внутри правильные параметры для соединения с базой. Эти же параметры, понятно, прописываются и в config/database.yml
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+Клиент для мобильных устройств на базе Android к этой базе тут: https://github.com/dair/madmadmax-power-android
